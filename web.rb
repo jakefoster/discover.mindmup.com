@@ -8,6 +8,10 @@ get '/geeks' do
   @title="Mind Maps for Geeks"
   erb :geeks
 end
+get '/presentations' do
+  @title="Presentations and slide shows"
+  erb :presentations
+end
 get '/impactmapping' do
   @title="Impact Mapping"
   erb :impact_mapping
