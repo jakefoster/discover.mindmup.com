@@ -16,3 +16,7 @@ get '/impactmapping' do
   @title="Impact Mapping"
   erb :impact_mapping
 end
+get '/mindmup-gold' do
+  @title="MindMup Gold"
+  erb :gold
+end
