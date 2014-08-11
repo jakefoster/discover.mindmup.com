@@ -20,3 +20,11 @@ get '/mindmup-gold' do
   @title="MindMup Gold"
   erb :gold
 end
+get '/keyboard-shortcuts' do
+  @title='Keyboard Shortcuts'
+  erb :keyboard_shortcuts
+end
+get '/mouse-touch-operations' do
+  @title='Mouse and Touch operations'
+  erb :mouse_touch
+end
