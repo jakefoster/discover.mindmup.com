@@ -12,6 +12,10 @@ get '/presentations' do
   @title="Presentations and slide shows"
   erb :presentations
 end
+get '/storyboards' do
+  @title="MindMup Storyboards"
+  erb :storyboards
+end
 get '/impactmapping' do
   @title="Impact Mapping"
   erb :impact_mapping
