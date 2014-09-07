@@ -61,7 +61,9 @@ blockquote {
 .jumbotron {
 background-image: url('/img/header.png');
 background-size: cover;
-background-position: center;
+background-position: center bottom;
+margin-bottom: 0px;
+padding-bottom: 30px;
 }
 .jumbotron h1 {
   text-shadow: rgb(20,20,20) 0px 0px 60px, black 0px 0px 10px, black 1px 1px;
