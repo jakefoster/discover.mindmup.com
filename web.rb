@@ -1,8 +1,12 @@
 require 'sinatra'
 configure do
 end
+get '/v/:version/:file' do
+  send_file File.join(settings.public_folder, params[:file])
+end
 get '/' do
-  redirect "/impactmapping"
+  @title="Discover MindMup"
+  erb :home, :layout => false
 end
 get '/geeks' do
   @title="Mind Maps for Geeks"
