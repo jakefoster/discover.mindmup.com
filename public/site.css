@@ -74,7 +74,7 @@ padding-bottom: 0px;
 background: transparent;
 }
 .jumbotron h1 {
-  text-shadow: black 2px 2px;
+  text-shadow: black 1px 1px, black 2px 2px;
   color: rgb(34, 170, 224);
 }
 .jumbotron h1 small {
