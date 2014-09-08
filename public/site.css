@@ -55,22 +55,30 @@ blockquote {
 .carousel .item {
   height: 250px;
 }
-.carousel-caption {
-  color: rgb(90,90,90);
+.carousel-caption p {
+  text-shadow: black 1px 1px, rgb(19,19,19) 0px 0px 30px;
 }
-.jumbotron {
-background-image: url('/img/header.png');
+.carousel-caption footer a {
+  color: #eeeeee;
+  text-shadow: black 1px 1px, rgb(19,19,19) 0px 0px 30px;
+}
+.big {
+background-image: url('/img/header-g3.png');
 background-size: cover;
 background-position: center bottom;
+margin-bottom: 20px;
+}
+.jumbotron {
 margin-bottom: 0px;
-padding-bottom: 30px;
+padding-bottom: 0px;
+background: transparent;
 }
 .jumbotron h1 {
-  text-shadow: rgb(20,20,20) 0px 0px 60px, black 0px 0px 10px, black 1px 1px;
-  color: white;
+  text-shadow: black 2px 2px;
+  color: rgb(34, 170, 224);
 }
 .jumbotron h1 small {
-  color: white;
+  color: rgb(34, 170, 224);
 }
 .lists {
  text-align:center;
