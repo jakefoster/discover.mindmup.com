@@ -63,7 +63,7 @@ blockquote {
   text-shadow: black 1px 1px, rgb(19,19,19) 0px 0px 30px;
 }
 .big {
-background-image: url('/img/header-g3.png');
+background-image: url('http://static.mindmup.com/press-resources/header-g3.png');
 background-size: cover;
 background-position: center bottom;
 margin-bottom: 20px;
