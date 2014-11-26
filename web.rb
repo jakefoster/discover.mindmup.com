@@ -41,3 +41,11 @@ get '/press' do
   @title='Press resources'
   erb :press
 end
+get '/mindmup-for-tablets' do
+  @title='MindMup for Tablets and Phones'
+  erb :mobile
+end
+get '/guide_mobile/:version' do
+  @title="MindMup IOS Guide version #{params[:version]}"
+  erb :guide_mobile, :layout=> false
+end

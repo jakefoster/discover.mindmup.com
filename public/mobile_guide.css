@@ -1,0 +1,5 @@
+.app-guide { display:none; }
+body.show-app-guide .app-guide {display: block;}
+.quick-edit-guide { display:none; }
+body.show-quick-edit-guide .quick-edit-guide {display: block;}
+
