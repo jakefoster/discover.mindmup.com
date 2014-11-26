@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>public/lib/layout-export.js - MindMup</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="https://mindmup.github.com/logo_64.png" title="MindMup"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 20141124</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/ActivityLog.html">ActivityLog</a></li>
+                                <li><a href="../classes/GoldApi.html">GoldApi</a></li>
+                                <li><a href="../classes/GoldLicenseManager.html">GoldLicenseManager</a></li>
+                                <li><a href="../classes/JsonStorage.html">JsonStorage</a></li>
+                                <li><a href="../classes/LayoutExportController.html">LayoutExportController</a></li>
+                                <li><a href="../classes/S3Api.html">S3Api</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/MM.html">MM</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: public/lib/layout-export.js</h1>
+                        
+                        <div class="file">
+                            <pre class="code prettyprint linenums">
+                        /*global jQuery, MM, _ */
+                        /**
+                         * Utility class that implements the workflow for requesting an export and polling for results.
+                         *
+                         * ## Export workflow
+                         *
+                         * MindMup.com supports several server processes that convert map (or layout) files into other formats (images, slides etc).
+                         * These server side resources require a valid Gold license for storage and billing, so the access is controlled
+                         * using the {{#crossLink &quot;GoldApi&quot;}}{{/crossLink}}. The general workflow to order an export is:
+                         *
+                         * 1. Ask the Gold API for an upload token for a particular upload format.
+                         *    The Gold API will reply with all information required to upload a file to
+                         *    Amazon S3, as well as signed URLs to check for the conversion result or error
+                         * 2. Upload the source content to Amazon S3. Note that some formats require a layout, some require an entire map.
+                         * 3. Poll the result and error URLs periodically. If the file appears on the result URL, download it and send to users. If
+                         *    a file appears on the error URL or nothing appears until the polling timeout, fail and stop polling
+                         *
+                         * This class coordinates all the complexity of the workflow and conversions in a simple convenience method.
+                         *
+                         * ## Export formats
+                         *
+                         * Currently supported formats are:
+                         *    * pdf - the map file as a scalable vector PDF
+                         *    * png - the map as a bitmap image (PNG)
+                         *    * presentation.pdf - the slideshow as a scalable vector PDF
+                         *    * presentation.pptx - the slideshow as a PowerPoint file
+                         *
+                         * In general, the exporters do not work on raw map files, but on layouts already positioned by the client browser. The pdf and png
+                         * export formats require a map layout to be uploaded to the server. The storyboard exporters require a JSON version of the storyboard.
+                         * There are several utility functions that generate the appropriate content for each format. For an example of how to generate the
+                         * right data to send it up, see https://github.com/mindmup/mindmup/blob/master/public/main.js
+                         *
+                         * ### Additional properties
+                         *
+                         * The PDF format requires the following additional properties to be specified when starting the export
+                         *
+                         *     {export: {&#x27;orientation&#x27;: String, &#x27;page-size&#x27;: String, &#x27;margin&#x27;: int }}
+                         *
+                         * * orientation can be either &#x27;portrait&#x27; or &#x27;landscape&#x27;
+                         * * page-size can be A0, A1, A2, A3, A4, A5
+                         *
+                         * @class LayoutExportController
+                         * @constructor
+                         * @param {Object} exportFunctions a hash-map _format -&gt; function_ that produces a JSON object which will be uploaded to the server
+                         * @param {Object} configurationGenerator object implementing the following API (for example a {{#crossLink &quot;GoldApi&quot;}}{{/crossLink}} instance)
+                         * @param {function} configurationGenerator.generateExportConfiguration (String format)
+                         * @param {Object} storageApi object implementing the following API (for example a {{#crossLink &quot;S3Api&quot;}}{{/crossLink}} instance):
+                         * @param {function} storageApi.save (String content, Object configuration, Object properties)
+                         * @param {function} storageApi.poll (URL urlToPoll, Object options)
+                         * @param {ActivityLog} activityLog logging interface
+                         */
+                        MM.LayoutExportController = function (exportFunctions, configurationGenerator, storageApi, activityLog) {
+                        	&#x27;use strict&#x27;;
+                        	var self = this,
+                        		category = &#x27;Map&#x27;,
+                        		getEventType = function (format) {
+                        			if (!format) {
+                        				return &#x27;Export&#x27;;
+                        			}
+                        			return format.toUpperCase() + &#x27; Export&#x27;;
+                        		};
+                            /**
+                             * Kick-off an export workflow
+                             *
+                             * This method will generate the content to export by calling the appropriate export function, merge optional
+                             * generic data with the result, upload the document to the server and poll until it receives an error or a result
+                             *
+                             * @method startExport
+                             * @param {String} format one of the supported formats, provided in the constructor
+                             * @param [exportProperties] any generic properties that will be merged into the object generated by an export function before uploading
+                             * @return {jQuery.Deferred} a jQuery promise that will be resolved with the URL of the exported document if successful
+                             */
+                        	self.startExport = function (format, exportProperties) {
+                        		var deferred = jQuery.Deferred(),
+                        			eventType = getEventType(format),
+                        			isStopped = function () {
+                        				return deferred.state() !== &#x27;pending&#x27;;
+                        			},
+                        			reject = function (reason, fileId) {
+                        				activityLog.log(category, eventType + &#x27; failed&#x27;, reason);
+                        				deferred.reject(reason, fileId);
+                        			},
+                        			exported = exportFunctions[format](),
+                        			layout = _.extend({}, exported, exportProperties);
+                        		if (_.isEmpty(exported)) {
+                        			return deferred.reject(&#x27;empty&#x27;).promise();
+                        		}
+                        		activityLog.log(category, eventType + &#x27; started&#x27;);
+                        		configurationGenerator.generateExportConfiguration(format).then(
+                        			function (exportConfig) {
+                        				var fileId = exportConfig.s3UploadIdentifier;
+                        				storageApi.save(JSON.stringify(layout), exportConfig, {isPrivate: true}).then(
+                        					function () {
+                        						var pollTimer = activityLog.timer(category, eventType + &#x27;:polling-completed&#x27;),
+                        							pollTimeoutTimer = activityLog.timer(category, eventType + &#x27;:polling-timeout&#x27;),
+                        							pollErrorTimer = activityLog.timer(category, eventType + &#x27;:polling-error&#x27;),
+                        							resolve = function () {
+                        								pollTimer.end();
+                        								activityLog.log(category, eventType + &#x27; completed&#x27;);
+                        								deferred.resolve(exportConfig.signedOutputUrl);
+                        							};
+                        						storageApi.poll(exportConfig.signedErrorListUrl, {stoppedSemaphore: isStopped, sleepPeriod: 15000}).then(
+                        							function () {
+                        								pollErrorTimer.end();
+                        								reject(&#x27;generation-error&#x27;, fileId);
+                        							});
+                        						storageApi.poll(exportConfig.signedOutputListUrl, {stoppedSemaphore: isStopped, sleepPeriod: 5000}).then(
+                        							resolve,
+                        							function (reason) {
+                        								pollTimeoutTimer.end();
+                        								reject(reason, fileId);
+                        							});
+                        					},
+                        					reject
+                        				);
+                        			},
+                        			reject
+                        		);
+                        		return deferred.promise();
+                        	};
+                        };
+                        
+                        jQuery.fn.layoutExportWidget = function (layoutExportController) {
+                        	&#x27;use strict&#x27;;
+                        	return this.each(function () {
+                        		var self = jQuery(this),
+                        			selectedFormat = function () {
+                        				var selector = self.find(&#x27;[data-mm-role=format-selector]&#x27;);
+                        				if (selector &amp;&amp; selector.val()) {
+                        					return selector.val();
+                        				} else {
+                        					return self.data(&#x27;mm-format&#x27;);
+                        				}
+                        			},
+                        			confirmElement = self.find(&#x27;[data-mm-role=export]&#x27;),
+                        			setState = function (state) {
+                        				self.find(&#x27;.visible&#x27;).hide();
+                        				self.find(&#x27;.visible&#x27; + &#x27;.&#x27; + state).show();
+                        			},
+                        			exportComplete = function (url) {
+                        				self.find(&#x27;[data-mm-role=output-url]&#x27;).attr(&#x27;href&#x27;, url);
+                        				setState(&#x27;done&#x27;);
+                        			},
+                        			getExportMetadata = function () {
+                        				var form = self.find(&#x27;form[data-mm-role=export-parameters]&#x27;),
+                        					exportType = {};
+                        				if (form) {
+                        					form.find(&#x27;button.active&#x27;).add(form.find(&#x27;select&#x27;)).add(form.find(&#x27;input[type=hidden]&#x27;)).each(function () {
+                        						exportType[jQuery(this).attr(&#x27;name&#x27;)] = jQuery(this).val();
+                        					});
+                        				}
+                        				return exportType;
+                        			},
+                        			exportFailed = function (reason, fileId) {
+                        				self.find(&#x27;[data-mm-role=contact-email]&#x27;).attr(&#x27;href&#x27;, function () { return &#x27;mailto:&#x27; + jQuery(this).text() + &#x27;?subject=MindMup%20&#x27; + selectedFormat().toUpperCase() + &#x27;%20Export%20Error%20&#x27; + fileId; });
+                        				self.find(&#x27;[data-mm-role=file-id]&#x27;).html(fileId);
+                        				self.find(&#x27;.error span&#x27;).hide();
+                        				setState(&#x27;error&#x27;);
+                        
+                        				var predefinedMsg = self.find(&#x27;[data-mm-role=&#x27; + reason + &#x27;]&#x27;);
+                        				if (predefinedMsg.length &gt; 0) {
+                        					predefinedMsg.show();
+                        				} else {
+                        					self.find(&#x27;[data-mm-role=error-message]&#x27;).html(reason).show();
+                        				}
+                        			},
+                        			doExport = function () {
+                        				setState(&#x27;inprogress&#x27;);
+                        				layoutExportController.startExport(selectedFormat(), {&#x27;export&#x27;: getExportMetadata()}).then(exportComplete, exportFailed);
+                        			};
+                        		self.find(&#x27;form&#x27;).submit(function () {return false; });
+                        		confirmElement.click(doExport).keydown(&#x27;space&#x27;, doExport);
+                        		self.modal({keyboard: true, show: false});
+                        		self.on(&#x27;show&#x27;, function () {
+                        			setState(&#x27;initial&#x27;);
+                        		}).on(&#x27;shown&#x27;, function () {
+                        			confirmElement.focus();
+                        		});
+                        	});
+                        };
+                        MM.buildMapLayoutExporter = function (mapModel, resourceTranslator) {
+                        	&#x27;use strict&#x27;;
+                        	return function () {
+                        		var layout = mapModel.getCurrentLayout();
+                        		if (layout &amp;&amp; layout.nodes) {
+                        			_.each(layout.nodes, function (node) {
+                        				if (node.attr &amp;&amp; node.attr.icon &amp;&amp; node.attr.icon.url) {
+                        					node.attr.icon.url = resourceTranslator(node.attr.icon.url);
+                        				}
+                        			});
+                        		}
+                        		return layout;
+                        	};
+                        };
+                        
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

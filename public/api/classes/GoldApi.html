@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>GoldApi - MindMup</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="https://mindmup.github.com/logo_64.png" title="MindMup"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 20141124</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/ActivityLog.html">ActivityLog</a></li>
+                                <li><a href="../classes/GoldApi.html">GoldApi</a></li>
+                                <li><a href="../classes/GoldLicenseManager.html">GoldLicenseManager</a></li>
+                                <li><a href="../classes/JsonStorage.html">JsonStorage</a></li>
+                                <li><a href="../classes/LayoutExportController.html">LayoutExportController</a></li>
+                                <li><a href="../classes/S3Api.html">S3Api</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/MM.html">MM</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1>GoldApi Class</h1>
+                        <div class="box meta">
+                        
+                        
+                                <div class="foundat">
+                                    Defined in: <a href="../files/public_lib_gold-api.js.html#l2"><code>public&#x2F;lib&#x2F;gold-api.js:2</code></a>
+                                </div>
+                        
+                                    Module: <a href="../modules/MM.html">MM</a>
+                        
+                        </div>
+                        
+                        
+                        <div class="box intro">
+                            <p>MM Gold API wrapper. This class is a JavaScript interface to the remote HTTP Gold server API,
+                        and provides low-level methods for authentication and generating security tokens.
+                        It implements the <em>configurationGenerator</em> interface required by the <a href="../classes/LayoutExportController.html" class="crosslink">LayoutExportController</a>
+                        so it can be used directly to construct an export workflow class.</p>
+                        <h2 id="access-licenses">Access licenses</h2>
+                        <p>MindMup Gold requires a valid license for most file operations. The license is effectively a secret key
+                        identifying the user, and granting access to the server resources for storage and export. The license
+                        is used for billing purposes to associate the resource usage with an active Gold subscription.</p>
+                        <p>There are two ways to allow users to access the service:</p>
+                        <ol>
+                        <li>Allow your users to log in with their individual Gold accounts, effectively using their subscriptions</li>
+                        <li>Use a single license for all the users</li>
+                        </ol>
+                        <p>For the first scenario, each user session should go through the Authentication Workflow described below. For
+                        the second scenario, it is better to execute the authentication once manually, and store the license
+                        key securely on a server. The license key never expires and should be kept secret.</p>
+                        <p>To make this class more useful, the actual storage and management of the license is abstracted into a separate
+                        interface, so third party implementers can provide their own storage mechanism. See
+                        the <a href="../classes/GoldLicenseManager.html" class="crosslink">GoldLicenseManager</a> for more information.</p>
+                        <h2 id="authentication-workflow">Authentication workflow</h2>
+                        <p>MindMup Gold does not use passwords - instead, the authentication workflow
+                        is similar to the typical password reset scenario - a one-time
+                        authentication token can be requested from the server, and the token is sent
+                        to the e-mail associated with the account. This token can then be used to
+                        retrieve the Gold license key (in effect, logging in). See
+                        <a href="../classes/GoldApi.html#method_requestCode" class="crosslink">requestCode</a> and
+                        <a href="../classes/GoldApi.html#method_restoreLicenseWithCode" class="crosslink">restoreLicenseWithCode</a>
+                        for more information.</p>
+                        <p>For extra security, the internal HTTP API requires the sender to provide a
+                        token known only to the requester while asking for a code, and supply the
+                        same token again when retrieving the license. This effectively protects
+                        against the e-mail being intercepted. A third party reading e-mails with
+                        access codes will not be able to use them, because they don&#39;t know the
+                        client token. The JavaScript API hides this complexity and automatically
+                        generates a random string to send. This limits the execution of the two
+                        calls to a single instance of GoldApi, as the current string is stored in
+                        memory.</p>
+                        <p>The one-time codes sent by mail have to be used within a 10 minute time span
+                        to retrieve a license, and only one such code can be active at any given
+                        time. Requesting a new code effectively cancels the previous one.  (The
+                        license string itself never expires automatically, and can be cached
+                        locally).</p>
+                        
+                        </div>
+                        
+                            <div class="constructor">
+                                <h2>Constructor</h2>
+                                <div id="method_GoldApi" class="method item">
+                                    <h3 class="name"><code>GoldApi</code></h3>
+                                
+                                        <div class="args">
+                                            <span class="paren">(</span><ul class="args-list inline commas">
+                                                <li class="arg">
+                                                        <code>goldLicenseManager</code>
+                                                </li>
+                                                <li class="arg">
+                                                        <code>goldApiUrl</code>
+                                                </li>
+                                                <li class="arg">
+                                                        <code>activityLog</code>
+                                                </li>
+                                                <li class="arg">
+                                                        <code>goldBucketName</code>
+                                                </li>
+                                            </ul><span class="paren">)</span>
+                                        </div>
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                    <div class="meta">
+                                                <p>
+                                                Defined in
+                                        <a href="../files/public_lib_gold-api.js.html#l2"><code>public&#x2F;lib&#x2F;gold-api.js:2</code></a>
+                                        </p>
+                                
+                                
+                                
+                                    </div>
+                                
+                                    <div class="description">
+                                        
+                                    </div>
+                                
+                                        <div class="params">
+                                            <h4>Parameters:</h4>
+                                
+                                            <ul class="params-list">
+                                                <li class="param">
+                                                        <code class="param-name">goldLicenseManager</code>
+                                                        <span class="type"><a href="../classes/GoldLicenseManager.html" class="crosslink">GoldLicenseManager</a></span>
+                                
+                                
+                                                    <div class="param-description">
+                                                        <p>an object implementing the GoldLicenseManager API</p>
+                                
+                                                    </div>
+                                
+                                                </li>
+                                                <li class="param">
+                                                        <code class="param-name">goldApiUrl</code>
+                                                        <span class="type">String</span>
+                                
+                                
+                                                    <div class="param-description">
+                                                        <p>the end-point for the HTTP API</p>
+                                
+                                                    </div>
+                                
+                                                </li>
+                                                <li class="param">
+                                                        <code class="param-name">activityLog</code>
+                                                        <span class="type"><a href="../classes/ActivityLog.html" class="crosslink">ActivityLog</a></span>
+                                
+                                
+                                                    <div class="param-description">
+                                                        <p>activity log instance for logging purposes</p>
+                                
+                                                    </div>
+                                
+                                                </li>
+                                                <li class="param">
+                                                        <code class="param-name">goldBucketName</code>
+                                                        <span class="type">String</span>
+                                
+                                
+                                                    <div class="param-description">
+                                                        <p>the S3 bucket name for public and anonymous files</p>
+                                
+                                                    </div>
+                                
+                                                </li>
+                                            </ul>
+                                        </div>
+                                
+                                
+                                </div>
+                            </div>
+                        
+                        <div id="classdocs" class="tabview">
+                            <ul class="api-class-tabs">
+                                <li class="api-class-tab index"><a href="#index">Index</a></li>
+                        
+                                    <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+                            </ul>
+                        
+                            <div>
+                                <div id="index" class="api-class-tabpanel index">
+                                    <h2 class="off-left">Item Index</h2>
+                        
+                                        <div class="index-section methods">
+                                            <h3>Methods</h3>
+                        
+                                            <ul class="index-list methods">
+                                                    <li class="index-item method">
+                                                        <a href="#method_generateExportConfiguration">generateExportConfiguration</a>
+                        
+                                                    </li>
+                                                    <li class="index-item method">
+                                                        <a href="#method_requestCode">requestCode</a>
+                        
+                                                    </li>
+                                                    <li class="index-item method">
+                                                        <a href="#method_restoreLicenseWithCode">restoreLicenseWithCode</a>
+                        
+                                                    </li>
+                                            </ul>
+                                        </div>
+                        
+                        
+                        
+                                </div>
+                        
+                                    <div id="methods" class="api-class-tabpanel">
+                                        <h2 class="off-left">Methods</h2>
+                        
+                                            <div id="method_generateExportConfiguration" class="method item">
+                                                <h3 class="name"><code>generateExportConfiguration</code></h3>
+                                            
+                                                    <div class="args">
+                                                        <span class="paren">(</span><ul class="args-list inline commas">
+                                                            <li class="arg">
+                                                                    <code>format</code>
+                                                            </li>
+                                                        </ul><span class="paren">)</span>
+                                                    </div>
+                                            
+                                                    <span class="returns-inline">
+                                                        <span class="type">jQuery.Deferred</span>
+                                                    </span>
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                                <div class="meta">
+                                                            <p>
+                                                            Defined in
+                                                    <a href="../files/public_lib_gold-api.js.html#l138"><code>public&#x2F;lib&#x2F;gold-api.js:138</code></a>
+                                                    </p>
+                                            
+                                            
+                                            
+                                                </div>
+                                            
+                                                <div class="description">
+                                                    <p>Creates an export configuration for server-side exports. See
+                                            <a href="../classes/LayoutExportController.html#method_startExport" class="crosslink">startExport</a>
+                                            for an example of how to use it.</p>
+                                            
+                                                </div>
+                                            
+                                                    <div class="params">
+                                                        <h4>Parameters:</h4>
+                                            
+                                                        <ul class="params-list">
+                                                            <li class="param">
+                                                                    <code class="param-name">format</code>
+                                                                    <span class="type">String</span>
+                                            
+                                            
+                                                                <div class="param-description">
+                                                                    <p>one of supported formats</p>
+                                            
+                                                                </div>
+                                            
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                            
+                                                    <div class="returns">
+                                                        <h4>Returns:</h4>
+                                            
+                                                        <div class="returns-description">
+                                                                    <span class="type">jQuery.Deferred</span>:
+                                                                <p>asynchronous promise that will be resolved with the export configuration</p>
+                                            
+                                                        </div>
+                                                    </div>
+                                            
+                                            </div>
+                                            <div id="method_requestCode" class="method item">
+                                                <h3 class="name"><code>requestCode</code></h3>
+                                            
+                                                    <div class="args">
+                                                        <span class="paren">(</span><ul class="args-list inline commas">
+                                                            <li class="arg">
+                                                                    <code>identifier</code>
+                                                            </li>
+                                                            <li class="arg">
+                                                                    <code class="optional">[clientToken]</code>
+                                                            </li>
+                                                        </ul><span class="paren">)</span>
+                                                    </div>
+                                            
+                                                    <span class="returns-inline">
+                                                        <span class="type">jQuery.Deferred</span>
+                                                    </span>
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                                <div class="meta">
+                                                            <p>
+                                                            Defined in
+                                                    <a href="../files/public_lib_gold-api.js.html#l155"><code>public&#x2F;lib&#x2F;gold-api.js:155</code></a>
+                                                    </p>
+                                            
+                                            
+                                            
+                                                </div>
+                                            
+                                                <div class="description">
+                                                    <p>Request a one-time password from the Gold server. This method starts the remote authentication
+                                            workflow, and will result in a one-time password being sent to the e-mail address associated with the account.</p>
+                                            
+                                                </div>
+                                            
+                                                    <div class="params">
+                                                        <h4>Parameters:</h4>
+                                            
+                                                        <ul class="params-list">
+                                                            <li class="param">
+                                                                    <code class="param-name">identifier</code>
+                                                                    <span class="type">String</span>
+                                            
+                                            
+                                                                <div class="param-description">
+                                                                    <p>email or account name</p>
+                                            
+                                                                </div>
+                                            
+                                                            </li>
+                                                            <li class="param">
+                                                                    <code class="param-name optional">[clientToken]</code>
+                                                                    <span class="type">String</span>
+                                                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                            
+                                            
+                                                                <div class="param-description">
+                                                                     
+                                                                </div>
+                                            
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                            
+                                                    <div class="returns">
+                                                        <h4>Returns:</h4>
+                                            
+                                                        <div class="returns-description">
+                                                                    <span class="type">jQuery.Deferred</span>:
+                                                                <p>an asynchronous promise that will resolve if the e-mail was sent from the server and reject in case of an error</p>
+                                            
+                                                        </div>
+                                                    </div>
+                                            
+                                            </div>
+                                            <div id="method_restoreLicenseWithCode" class="method item">
+                                                <h3 class="name"><code>restoreLicenseWithCode</code></h3>
+                                            
+                                                    <div class="args">
+                                                        <span class="paren">(</span><ul class="args-list inline commas">
+                                                            <li class="arg">
+                                                                    <code>code</code>
+                                                            </li>
+                                                        </ul><span class="paren">)</span>
+                                                    </div>
+                                            
+                                                    <span class="returns-inline">
+                                                        <span class="type">jQuery.Deferred</span>
+                                                    </span>
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                                <div class="meta">
+                                                            <p>
+                                                            Defined in
+                                                    <a href="../files/public_lib_gold-api.js.html#l169"><code>public&#x2F;lib&#x2F;gold-api.js:169</code></a>
+                                                    </p>
+                                            
+                                            
+                                            
+                                                </div>
+                                            
+                                                <div class="description">
+                                                    <p>Load the license manager with the license, using a one time password sent by the Gold server. This
+                                            method completes the remote authentication worksflow.</p>
+                                            
+                                                </div>
+                                            
+                                                    <div class="params">
+                                                        <h4>Parameters:</h4>
+                                            
+                                                        <ul class="params-list">
+                                                            <li class="param">
+                                                                    <code class="param-name">code</code>
+                                                                    <span class="type">String</span>
+                                            
+                                            
+                                                                <div class="param-description">
+                                                                    <p>the one-time password received after requesting the code</p>
+                                            
+                                                                </div>
+                                            
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                            
+                                                    <div class="returns">
+                                                        <h4>Returns:</h4>
+                                            
+                                                        <div class="returns-description">
+                                                                    <span class="type">jQuery.Deferred</span>:
+                                                                <p>an asynchronous promise that will resolve or reject depending on the outcome. if successful, the GoldLicenseManager will have its license set.</p>
+                                            
+                                                        </div>
+                                                    </div>
+                                            
+                                            </div>
+                                    </div>
+                        
+                        
+                        
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

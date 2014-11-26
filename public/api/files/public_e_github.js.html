@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>public/e/github.js - MindMup</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="https://mindmup.github.com/logo_64.png" title="MindMup"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 20141124</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/ActivityLog.html">ActivityLog</a></li>
+                                <li><a href="../classes/GoldApi.html">GoldApi</a></li>
+                                <li><a href="../classes/GoldLicenseManager.html">GoldLicenseManager</a></li>
+                                <li><a href="../classes/JsonStorage.html">JsonStorage</a></li>
+                                <li><a href="../classes/LayoutExportController.html">LayoutExportController</a></li>
+                                <li><a href="../classes/S3Api.html">S3Api</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/MM.html">MM</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: public/e/github.js</h1>
+                        
+                        <div class="file">
+                            <pre class="code prettyprint linenums">
+                        /*global $, _, jQuery,, MM, window*/
+                        
+                        
+                        
+                        /***************************************/
+                        
+                        // This code was written by Tyler Akins and has been placed in the
+                        // public domain.  It would be nice if you left this header intact.
+                        // Base64 code from Tyler Akins -- http://rumkin.com
+                        
+                        var Base64 = (function () {
+                            var keyStr = &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=&quot;;
+                        
+                            var obj = {
+                                /**
+                                 * Encodes a string in base64
+                                 * @param {String} input The string to encode in base64.
+                                 */
+                                encode: function (input) {
+                                    var output = &quot;&quot;;
+                                    var chr1, chr2, chr3;
+                                    var enc1, enc2, enc3, enc4;
+                                    var i = 0;
+                        
+                                    do {
+                                        chr1 = input.charCodeAt(i++);
+                                        chr2 = input.charCodeAt(i++);
+                                        chr3 = input.charCodeAt(i++);
+                        
+                                        enc1 = chr1 &gt;&gt; 2;
+                                        enc2 = ((chr1 &amp; 3) &lt;&lt; 4) | (chr2 &gt;&gt; 4);
+                                        enc3 = ((chr2 &amp; 15) &lt;&lt; 2) | (chr3 &gt;&gt; 6);
+                                        enc4 = chr3 &amp; 63;
+                        
+                                        if (isNaN(chr2)) {
+                                            enc3 = enc4 = 64;
+                                        } else if (isNaN(chr3)) {
+                                            enc4 = 64;
+                                        }
+                        
+                                        output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2) +
+                                            keyStr.charAt(enc3) + keyStr.charAt(enc4);
+                                    } while (i &lt; input.length);
+                        
+                                    return output;
+                                },
+                        
+                                /**
+                                 * Decodes a base64 string.
+                                 * @param {String} input The string to decode.
+                                 */
+                                decode: function (input) {
+                                    var output = &quot;&quot;;
+                                    var chr1, chr2, chr3;
+                                    var enc1, enc2, enc3, enc4;
+                                    var i = 0;
+                        
+                                    // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
+                                    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, &quot;&quot;);
+                        
+                                    do {
+                                        enc1 = keyStr.indexOf(input.charAt(i++));
+                                        enc2 = keyStr.indexOf(input.charAt(i++));
+                                        enc3 = keyStr.indexOf(input.charAt(i++));
+                                        enc4 = keyStr.indexOf(input.charAt(i++));
+                        
+                                        chr1 = (enc1 &lt;&lt; 2) | (enc2 &gt;&gt; 4);
+                                        chr2 = ((enc2 &amp; 15) &lt;&lt; 4) | (enc3 &gt;&gt; 2);
+                                        chr3 = ((enc3 &amp; 3) &lt;&lt; 6) | enc4;
+                        
+                                        output = output + String.fromCharCode(chr1);
+                        
+                                        if (enc3 != 64) {
+                                            output = output + String.fromCharCode(chr2);
+                                        }
+                                        if (enc4 != 64) {
+                                            output = output + String.fromCharCode(chr3);
+                                        }
+                                    } while (i &lt; input.length);
+                        
+                                    return output;
+                                }
+                            };
+                        
+                            return obj;
+                        })();
+                        if (typeof exports !== &#x27;undefined&#x27;) {
+                            // Github = exports;
+                            module.exports = Base64;
+                        } else {
+                            window.Base64 = Base64;
+                        }
+                        
+                        
+                        /***************************************/
+                        
+                        MM.GitHub = { };
+                        MM.GitHub.popupWindowLoginLauncher = function () {
+                        	&#x27;use strict&#x27;;
+                        	var context = {},
+                        		deferred = jQuery.Deferred(),
+                        		popupFrame = window.open(&#x27;/github/login&#x27;, &#x27;_blank&#x27;, &#x27;height=400,width=700,location=no,menubar=no,resizable=yes,status=no,toolbar=no&#x27;),
+                        		onMessage = function (message) {
+                        			if (message &amp;&amp; message.github_token) {
+                        				deferred.resolve(message.github_token);
+                        			} else if (message &amp;&amp; message.github_error) {
+                        				deferred.reject(&#x27;failed-authentication&#x27;, message.github_error);
+                        			}
+                        		},
+                        		checkClosed = function () {
+                        			if (popupFrame.closed) {
+                        				deferred.reject(&#x27;user-cancel&#x27;);
+                        			}
+                        		},
+                        		interval = window.setInterval(checkClosed, 200);
+                        	deferred.always(function () {
+                        		window.MMGithubCallBack = undefined;
+                        		window.clearInterval(interval);
+                        	});
+                        	/* don&#x27;t do window.addListener here as it&#x27;s not deterministic if that or window.close will get to us first */
+                        	window.MMGithubCallBack = onMessage;
+                        	return deferred.promise();
+                        };
+                        MM.GitHub.GithubAPI = function (loginDialogLauncher, optionalSessionStorage) {
+                        	&#x27;use strict&#x27;;
+                        	var self = this,
+                        		sessionStorage = optionalSessionStorage || window.sessionStorage,
+                        		SESSION_AUTH_CACHE_KEY = &#x27;github_auth_token&#x27;,
+                        		authToken = function () {
+                        			return sessionStorage &amp;&amp; sessionStorage[SESSION_AUTH_CACHE_KEY];
+                        		},
+                        		setAuthToken = function (tokenString) {
+                        			sessionStorage[SESSION_AUTH_CACHE_KEY] = tokenString;
+                        		},
+                        		parseLinks = function (githubLinkString) {
+                        			if (!githubLinkString) {
+                        				return false;
+                        			}
+                        			var result = [],
+                        				regex = /&lt;([^&gt;]*)&gt;; rel=&quot;([^&quot;]*)&quot;/g,
+                        				matchArr,
+                        				added = {};
+                        			while ((matchArr = regex.exec(githubLinkString)) !== null) {
+                        				if (!added[matchArr[1]]) {
+                        					result.push({name:matchArr[2], link:matchArr[1]})
+                        					added[matchArr[1]] = true;
+                        				}
+                        			}
+                        			return result;
+                        		},
+                        		sendRequest = function (url, resultParser, requestType, requestData) {
+                        			var baseUrl = &#x27;https://api.github.com&#x27;,
+                        				result = jQuery.Deferred(),
+                        				request = {
+                        					url: /http:\/\/|https:\/\//.test(url)? url : baseUrl + url,
+                        					type: requestType || &#x27;GET&#x27;,
+                        					headers: {&#x27;Authorization&#x27;: &#x27;bearer &#x27; + authToken()}
+                        				};
+                        			if (requestData) {
+                        				request.data = JSON.stringify(requestData);
+                        				request.processData = false;
+                        			}
+                        			if (!authToken()) {
+                        				return result.reject(&#x27;not-authenticated&#x27;).promise();
+                        			}
+                        			jQuery.ajax(request).then(
+                        				function (githubData, textStatus, jxhr) {
+                        					var parsed = githubData,
+                        						links = jxhr &amp;&amp; jxhr.getResponseHeader(&#x27;Link&#x27;);
+                        					if (resultParser) {
+                        						if (_.isArray(githubData)) {
+                        							parsed = _.map(githubData, resultParser);
+                        						} else {
+                        							parsed = resultParser(githubData);
+                        						}
+                        					}
+                        					if (!links) {
+                        						result.resolve(parsed);
+                        					} else {
+                        						result.resolve(parsed, parseLinks(links));
+                        					}
+                        				},
+                        				function (xhr, problem) {
+                        					var unauthCodes = [401, 403];
+                        					if (xhr &amp;&amp; _.contains(unauthCodes, xhr.status)) {
+                        						setAuthToken(&#x27;&#x27;);
+                        						result.reject(&#x27;not-authenticated&#x27;);
+                        					} else if (xhr &amp;&amp; xhr.status === 404) {
+                        						result.reject(&#x27;not-found&#x27;);
+                        					}
+                        					result.reject(&#x27;network-error&#x27;, (xhr &amp;&amp; xhr.statusText) || problem);
+                        				},
+                        				result.notify
+                        			);
+                        			return result.promise();
+                        		},
+                        		componentPathToUrl = function (githubComponentPath) {
+                        			if (!githubComponentPath) {
+                        				return &#x27;&#x27;;
+                        			}
+                        			var url = &#x27;/repos/&#x27; + githubComponentPath.repo + &#x27;/contents&#x27;;
+                        			if (!(/^\//).test(githubComponentPath.path)) {
+                        				url = url + &#x27;/&#x27;;
+                        			}
+                        			if (githubComponentPath.path) {
+                        				url = url + githubComponentPath.path;
+                        			}
+                        			if (githubComponentPath.branch) {
+                        				url = url + &quot;?ref=&quot; + githubComponentPath.branch;
+                        			}
+                        			return url;
+                        		};
+                        	self.loadFile = function (githubComponentPath) {
+                        		var url = componentPathToUrl(githubComponentPath),
+                        			deferred = jQuery.Deferred();
+                        		sendRequest(url).then(
+                        			function (githubData) {
+                        				var contents;
+                        				if (githubData.encoding === &#x27;base64&#x27;) {
+                        					contents = window.Base64.decode(githubData.content);
+                        					deferred.resolve(contents, githubData.name);
+                        				} else {
+                        					deferred.reject(&#x27;format-error&#x27;, &#x27;Unknown encoding &#x27; + githubData.encoding);
+                        				}
+                        			},
+                        			deferred.reject,
+                        			deferred.notify
+                        		);
+                        		return deferred.promise();
+                        	};
+                        	self.saveFile = function (contentToSave, githubComponentPath, commitMessage) {
+                        		var pathWithoutBranch = _.extend({}, githubComponentPath, {branch: false}),
+                        			url = componentPathToUrl(pathWithoutBranch),
+                        			metaUrl = componentPathToUrl(githubComponentPath),
+                        			deferred = jQuery.Deferred(),
+                        			saveWithSha = function (sha) {
+                        				deferred.notify(&#x27;sending file to Github&#x27;);
+                        				sendRequest(url, false, &#x27;PUT&#x27;, {
+                        					content: window.Base64.encode(contentToSave),
+                        					message: commitMessage,
+                        					sha: sha,
+                        					branch: githubComponentPath.branch,
+                        				}).then(
+                        					deferred.resolve,
+                        					deferred.reject,
+                        					deferred.notify
+                        				);
+                        			};
+                        		deferred.notify(&#x27;fetching meta-data&#x27;);
+                        		sendRequest(metaUrl).then(
+                        			function (githubFileMeta) {
+                        				saveWithSha(githubFileMeta &amp;&amp; githubFileMeta.sha);
+                        			},
+                        			function (reason, message) {
+                        				if (reason === &#x27;not-found&#x27;) {
+                        					saveWithSha(&#x27;&#x27;);
+                        				} else {
+                        					deferred.reject(reason, message);
+                        				}
+                        			},
+                        			deferred.notify
+                        		);
+                        		return deferred.promise();
+                        	};
+                        	self.login = function (withDialog) {
+                        		var deferred = jQuery.Deferred();
+                        		if (authToken()) {
+                        			return deferred.resolve();
+                        		}
+                        		if (!withDialog) {
+                        			return deferred.reject(&#x27;not-authenticated&#x27;);
+                        		}
+                        		loginDialogLauncher().then(
+                        			function loggedIn(authToken) {
+                        				setAuthToken(authToken);
+                        				deferred.resolve();
+                        			},
+                        			deferred.reject,
+                        			deferred.notify
+                        		);
+                        		return deferred.promise();
+                        	};
+                        	self.getRepositories = function (owner, ownerType, urlOverride) {
+                        		var repoParser = function (githubData) {
+                        				return {
+                        					type: &#x27;repo&#x27;,
+                        					name: githubData.full_name,
+                        					defaultBranch: githubData.default_branch
+                        				};
+                        			},
+                        			url;
+                        		if (ownerType === &#x27;org&#x27;) {
+                        			url = &#x27;/orgs/&#x27; + owner + &#x27;/repos&#x27;;
+                        		} else if (owner) {
+                        			url = &#x27;/users/&#x27; + owner + &#x27;/repos&#x27;;
+                        		} else {
+                        			url = &#x27;/user/repos&#x27;;
+                        		}
+                        		return sendRequest(urlOverride || url, repoParser);
+                        	};
+                        	self.getBranches = function (repository) {
+                        		var branchParser = function (githubData) {
+                        			return githubData.name;
+                        		};
+                        		return sendRequest(&#x27;/repos/&#x27; + repository + &#x27;/branches&#x27;, branchParser);
+                        	};
+                        	self.getFiles = function (componentPath) {
+                        		var deferred = jQuery.Deferred();
+                        		sendRequest(componentPathToUrl(componentPath)).then(
+                        			deferred.resolve,
+                        			function(reason) {
+                        				if (reason === &#x27;not-found&#x27;) {
+                        					deferred.resolve([]);
+                        				} else {
+                        					deferred.reject(reason);
+                        				}
+                        			},
+                        			deferred.notify
+                        		);
+                        		return deferred.promise();
+                        	};
+                        	self.getOrgs = function () {
+                        		var orgParser = function (githubData) {
+                        			return { name: githubData.login, type: &#x27;org&#x27; };
+                        		};
+                        		return sendRequest(&#x27;/user/orgs&#x27;, orgParser);
+                        	};
+                        	self.getUser = function () {
+                        		var userParser = function (githubData) {
+                        			return { name: githubData.login, type: &#x27;user&#x27; };
+                        		};
+                        		return sendRequest(&#x27;/user&#x27;, userParser);
+                        	};
+                        };
+                        
+                        MM.GitHub.GithubFileSystem = function (api, prompters) {
+                        	&#x27;use strict&#x27;;
+                        	var self = this,
+                        		toGithubComponentPath = function (mindMupMapId) {
+                        			if (!mindMupMapId || mindMupMapId.length &lt; 3 || !self.recognises(mindMupMapId)) {
+                        				return {};
+                        			}
+                        			var components = mindMupMapId.slice(2).split(&#x27;:&#x27;);
+                        			return {
+                        				repo: components &amp;&amp; components[0],
+                        				branch: components &amp;&amp; components[1],
+                        				path: components &amp;&amp; components[2]
+                        			};
+                        		},
+                        		properties = {};
+                        	self.loadMap = function (mapId, showAuthenticationDialogs) {
+                        		var deferred = jQuery.Deferred(),
+                        			readySucceeded = function () {
+                        				api.loadFile(toGithubComponentPath(mapId)).then(
+                        					function (content, fileName) {
+                        						deferred.resolve(content, mapId, undefined, properties, fileName);
+                        					},
+                        					deferred.reject,
+                        					deferred.notify
+                        				);
+                        			};
+                        		api.login(showAuthenticationDialogs).then(readySucceeded, deferred.reject, deferred.notify);
+                        		return deferred.promise();
+                        	};
+                        	self.saveMap = function (contentToSave, mapId, fileName, showAuthenticationDialogs) {
+                        		var deferred = jQuery.Deferred(),
+                        			saveWhenAuthorised = function () {
+                        				var path = toGithubComponentPath(mapId);
+                        				if (!path.path) {
+                        					prompters.fileName(&#x27;Save to Github&#x27;, true, fileName).then(
+                        						function (newMapId) {
+                        							self.saveMap(contentToSave, newMapId, fileName, showAuthenticationDialogs)
+                        								.then(deferred.resolve, deferred.reject, deferred.notify);
+                        						},
+                        						deferred.reject,
+                        						deferred.notify
+                        					);
+                        				} else {
+                        					prompters.commit().then(
+                        						function (commitMessage) {
+                        							api.saveFile(contentToSave, path, commitMessage).then(
+                        								function () {
+                        									deferred.resolve(mapId, properties);
+                        								},
+                        								deferred.reject,
+                        								deferred.notify
+                        							);
+                        						},
+                        						deferred.reject,
+                        						deferred.notify
+                        					);
+                        				}
+                        			};
+                        		api.login(showAuthenticationDialogs).then(
+                        			saveWhenAuthorised,
+                        			deferred.reject,
+                        			deferred.notify
+                        		);
+                        		return deferred.promise();
+                        	};
+                        	self.prefix = &#x27;h&#x27;;
+                        	self.recognises = function (mapId) {
+                        		return mapId &amp;&amp; mapId[0] === self.prefix;
+                        	};
+                        	self.description = &quot;GitHub&quot;;
+                        };
+                        
+                        $.fn.githubOpenWidget = function (api, defaultAction) {
+                        	&#x27;use strict&#x27;;
+                        	var modal = this,
+                        		defaultTitle = modal.find(&#x27;[data-mm-role=dialog-title]&#x27;).text(),
+                        		title = defaultTitle,
+                        		allowNew = false,
+                        		deferredCaller,
+                        		template = this.find(&#x27;[data-mm-role=template]&#x27;),
+                        		fileList = template.parent(),
+                        		statusDiv = this.find(&#x27;[data-mm-role=status]&#x27;),
+                        		newFile = this.find(&#x27;[data-mm-role=new-file]&#x27;),
+                        		currentLoc = this.find(&#x27;[data-mm-role=current-location]&#x27;),
+                        		ownerField = this.find(&#x27;[data-mm-role=owner]&#x27;),
+                        		showAlert = function (message, type, detail, callback) {
+                        			type = type || &#x27;error&#x27;;
+                        			if (callback) {
+                        				detail = &quot;&lt;a&gt;&quot; + detail + &quot;&lt;/a&gt;&quot;;
+                        			}
+                        			statusDiv.html(&#x27;&lt;div class=&quot;alert fade-in alert-&#x27; + type + &#x27;&quot;&gt;&#x27; +
+                        					&#x27;&lt;button type=&quot;button&quot; class=&quot;close&quot; data-dismiss=&quot;alert&quot;&gt;&amp;#215;&lt;/button&gt;&#x27; +
+                        					&#x27;&lt;strong&gt;&#x27; + message + &#x27;&lt;/strong&gt;&#x27; + detail + &#x27;&lt;/div&gt;&#x27;);
+                        			if (callback) {
+                        				statusDiv.find(&#x27;a&#x27;).click(callback);
+                        			}
+                        		},
+                        		dynamicDropDown = function (self, buttonRole, deferredQuery) {
+                        			var deferred = jQuery.Deferred(),
+                        				ownerSearch = self.find(&#x27;[data-mm-role=&#x27; + buttonRole + &#x27;]&#x27;),
+                        				startSpin = function () {
+                        					ownerSearch.find(&#x27;.icon-spinner&#x27;).show();
+                        				},
+                        				stopSpin = function () {
+                        					ownerSearch.find(&#x27;.icon-spinner&#x27;).hide();
+                        				};
+                        			ownerSearch.click(function (evt) {
+                        				var appendResults = function (results) {
+                        					var options = $(&#x27;&lt;select&gt;&#x27;).css(&#x27;width&#x27;, ownerSearch.outerWidth());
+                        					_.each(results, function (element) {
+                        						$(&#x27;&lt;option&gt;&#x27;).text(element).appendTo(options);
+                        					});
+                        					options.change(function () {deferred.resolve(options.val()); });
+                        					ownerSearch.replaceWith(options);
+                        					options[0].dispatchEvent(evt.originalEvent);
+                        				};
+                        				startSpin();
+                        				deferredQuery().done(appendResults).fail(deferred.reject).always(stopSpin);
+                        			});
+                        			return deferred.promise();
+                        		},
+                        		fileRetrieval = function (showPopup, query) {
+                        			query = query || {};
+                        			var	filesLoaded = function (result, links) {
+                        					statusDiv.empty();
+                        					if (query.repo) {
+                        						currentLoc.text(query.repo + (query.branch ? &#x27;(&#x27; + query.branch + &#x27;)&#x27; : &#x27;&#x27;) + &quot;/&quot; +  (query.path || &#x27;&#x27;));
+                        					} else {
+                        						currentLoc.text(&#x27;Please select a repository&#x27;);
+                        					}
+                        					var sorted = _.sortBy(result, function (item) {
+                        							return item &amp;&amp; item.type + &#x27;:&#x27; + item.name;
+                        						}),
+                        						added,
+                        						linkContainer,
+                        						linkItem,
+                        						linkParent;
+                        
+                        					if (query.back) {
+                        						added = template.filter(&#x27;[data-mm-type=dir]&#x27;).clone().appendTo(fileList);
+                        						added.find(&#x27;[data-mm-role=dir-link]&#x27;).click(function () {
+                        							fileRetrieval(false, query.back);
+                        						});
+                        						added.find(&#x27;[data-mm-role=dir-name]&#x27;).text(&#x27;..&#x27;);
+                        					}
+                        					if (query &amp;&amp; query.repo &amp;&amp; allowNew) {
+                        						newFile.show();
+                        						newFile.data(&#x27;mm-current-path&#x27;, &#x27;h1&#x27; + query.repo + &#x27;:&#x27; + query.branch + &#x27;:&#x27;);
+                        					} else {
+                        						newFile.hide();
+                        					}
+                        					_.each(sorted, function (item) {
+                        						if (item) {
+                        							if (item.type === &#x27;repo&#x27;) {
+                        								added = template.filter(&#x27;[data-mm-type=repo]&#x27;).clone().appendTo(fileList);
+                        								added.find(&#x27;[data-mm-role=repo-link]&#x27;).click(function () {
+                        									fileRetrieval(false, {repo: item.name, branch: item.defaultBranch, back: query});
+                        								});
+                        								added.find(&#x27;[data-mm-role=repo-name]&#x27;).text(item.name);
+                        								added.find(&#x27;[data-mm-role=repo-default-branch]&#x27;).text(item.defaultBranch);
+                        								dynamicDropDown(added, &#x27;branch-search&#x27;, function () {
+                        									return api.getBranches(item.name);
+                        								}).then(
+                        									function (selectedBranch) {
+                        										fileRetrieval(false, {repo: item.name, branch: selectedBranch, back: query});
+                        									},
+                        									function () {
+                        										showAlert(&#x27;Could not load user information from Github, please try later&#x27;);
+                        									}
+                        								);
+                        							} else if (item.type === &#x27;dir&#x27;) {
+                        								added = template.filter(&#x27;[data-mm-type=dir]&#x27;).clone().appendTo(fileList);
+                        								added.find(&#x27;[data-mm-role=dir-link]&#x27;).click(function () {
+                        									fileRetrieval(false, {repo: query.repo, branch: query.branch, path: item.path, back: query});
+                        								});
+                        								added.find(&#x27;[data-mm-role=dir-name]&#x27;).text(item.name);
+                        							} else if (item.type === &#x27;file&#x27;) {
+                        								added = template.filter(&#x27;[data-mm-type=file]&#x27;).clone().appendTo(fileList);
+                        								added.find(&#x27;[data-mm-role=file-link]&#x27;).click(function () {
+                        									var action = (deferredCaller &amp;&amp; deferredCaller.resolve) || defaultAction;
+                        									action(&#x27;h1&#x27; + query.repo + &#x27;:&#x27; + query.branch + &#x27;:&#x27; + item.path);
+                        									modal.modal(&#x27;hide&#x27;);
+                        								});
+                        								added.find(&#x27;[data-mm-role=file-name]&#x27;).text(item.name);
+                        							}
+                        
+                        						}
+                        					});
+                        					if (links) {
+                        						linkContainer = template.filter(&#x27;[data-mm-type=links]&#x27;).clone();
+                        						linkItem = linkContainer.find(&#x27;[data-mm-role=link-item]&#x27;);
+                        						linkParent = linkItem.parent();
+                        						linkItem.detach();
+                        						linkContainer.appendTo(fileList);
+                        						_.each(links, function (link) {
+                        							linkItem.clone().appendTo(linkParent).find(&#x27;[data-mm-role=link-action]&#x27;).text(link.name).click(function () {
+                        								fileRetrieval(false, { &#x27;link&#x27;: link.link, back: query});
+                        							});
+                        						});
+                        					}
+                        				},
+                        				showError = function (reason) {
+                        					if (reason === &#x27;failed-authentication&#x27;) {
+                        						showAlert(&#x27;Authentication failed, we were not able to access your Github repositories&#x27;);
+                        					} else if (reason === &#x27;not-authenticated&#x27;) {
+                        						showAlert(
+                        							&#x27;&lt;h4&gt;Authorisation required&lt;h4&gt;&#x27;,
+                        							&#x27;block&#x27;,
+                        							&#x27;Click here to authorise with Github&#x27;,
+                        							function () {
+                        								fileRetrieval(true, query);
+                        							}
+                        						);
+                        					} else {
+                        						showAlert(&#x27;There was a network error, please try again later&#x27;);
+                        					}
+                        				};
+                        			fileList.empty();
+                        			statusDiv.html(&#x27;&lt;i class=&quot;icon-spinner icon-spin&quot;/&gt; Retrieving files...&#x27;);
+                        			api.login(showPopup).then(function () {
+                        				if (query.owner) {
+                        					api.getRepositories(query.owner, query.ownerType).then(filesLoaded, showError);
+                        				} else if (query.repo) {
+                        					api.getFiles(query).then(filesLoaded, showError);
+                        				} else if (query.link) {
+                        					api.getRepositories(false, false, query.link).then(filesLoaded, showError);
+                        				} else {
+                        					api.getRepositories().then(filesLoaded, showError);
+                        				}
+                        			}, showError);
+                        		},
+                        		changeOwner = function () {
+                        			var link = $(this);
+                        			ownerField.val(link.data(&#x27;mm-owner&#x27;));
+                        			if (link.data(&#x27;mm-owner-type&#x27;) === &#x27;org&#x27;) {
+                        				fileRetrieval(false, {owner: link.data(&#x27;mm-owner&#x27;), ownerType: &#x27;org&#x27; });
+                        			} else {
+                        				fileRetrieval();
+                        			}
+                        		},
+                        		userMetaDataLoaded = false,
+                        		loadUserMetaData = function () {
+                        			var ownerSearch = modal.find(&#x27;[data-mm-role=owner-search]&#x27;),
+                        				list = modal.find(&#x27;[data-mm-role=owner-list]&#x27;),
+                        				startSpin = function () {
+                        					ownerSearch.find(&#x27;.icon-spinner&#x27;).show();
+                        				},
+                        				stopSpin = function () {
+                        					ownerSearch.find(&#x27;.icon-spinner&#x27;).hide();
+                        				},
+                        				appendUser = function (user) {
+                        					var userLink = $(&#x27;&lt;a&gt;&#x27;).data(&#x27;mm-owner&#x27;, user.name).data(&#x27;mm-owner-type&#x27;, user.type).text(user.name);
+                        					userLink.click(changeOwner);
+                        					$(&quot;&lt;li&gt;&quot;).append(userLink).appendTo(list);
+                        				},
+                        				appendOrgs = function (orgs) {
+                        					_.each(orgs, appendUser);
+                        				},
+                        				loaded = function () {
+                        					userMetaDataLoaded = true;
+                        					statusDiv.empty();
+                        					stopSpin();
+                        				},
+                        				loadError = function () {
+                        					stopSpin();
+                        					showAlert(&#x27;Could not load user information from Github, please try later&#x27;);
+                        				};
+                        			if (userMetaDataLoaded) {
+                        				return;
+                        			}
+                        			list.empty();
+                        			startSpin();
+                        			api.getUser().then(
+                        				function (userInfo) {
+                        					appendUser(userInfo);
+                        					api.getOrgs().then(
+                        						function (orgs) {
+                        							appendOrgs(orgs);
+                        							loaded();
+                        						},
+                        						loadError
+                        					);
+                        				},
+                        				loadError
+                        			);
+                        		},
+                        		createNewFile = function () {
+                        			var input = newFile.find(&#x27;input&#x27;);
+                        			if (input.val()) {
+                        				deferredCaller.resolve(newFile.data(&#x27;mm-current-path&#x27;) + &#x27;/&#x27; + input.val());
+                        				modal.modal(&#x27;hide&#x27;);
+                        			}
+                        			return false;
+                        		};
+                        	modal.on(&#x27;show&#x27;, function () {
+                        		modal.find(&#x27;.icon-spinner&#x27;).hide();
+                        		modal.find(&#x27;[data-mm-role=dialog-title]&#x27;).text(title);
+                        		fileRetrieval();
+                        	});
+                        	newFile.find(&#x27;input&#x27;).keydown(&#x27;return&#x27;, createNewFile);
+                        	newFile.find(&#x27;button&#x27;).click(createNewFile);
+                        	modal.find(&#x27;[data-mm-role=owner-search]&#x27;).click(loadUserMetaData);
+                        	ownerField.change(function () {
+                        		fileRetrieval(false, {owner: this.value, ownerType: &#x27;user&#x27;});
+                        	}).keydown(&#x27;return&#x27;, function (e) {
+                        		fileRetrieval(false, {owner: this.value, ownerType: &#x27;user&#x27;});
+                        		e.stopPropagation();
+                        		return false;
+                        	});
+                        	modal.on(&#x27;hide&#x27;, function () {
+                        		if (deferredCaller) {
+                        			deferredCaller.reject(&#x27;user-cancel&#x27;);
+                        		}
+                        		deferredCaller = undefined;
+                        		allowNew = false;
+                        		title = defaultTitle;
+                        		newFile.find(&#x27;input&#x27;).val(&#x27;&#x27;);
+                        		ownerField.val(&#x27;&#x27;);
+                        	});
+                        	modal.promptForFileName = function (dialogTitle, shouldAllowNewFile, defaultNewFileName) {
+                        		title = dialogTitle;
+                        		allowNew = shouldAllowNewFile;
+                        		deferredCaller = jQuery.Deferred();
+                        		modal.modal(&#x27;show&#x27;);
+                        		newFile.find(&#x27;input&#x27;).val(defaultNewFileName);
+                        		return deferredCaller.promise();
+                        	};
+                        	return modal;
+                        };
+                        $.fn.githubCommitWidget = function () {
+                        	&#x27;use strict&#x27;;
+                        	var self = this,
+                        		deferredCommitCall,
+                        		input = self.find(&#x27;input&#x27;),
+                        		controlGroup = self.find(&#x27;.control-group&#x27;),
+                        		commit = self.find(&#x27;[data-mm-role=commit]&#x27;);
+                        	self.on(&#x27;show&#x27;, function () {
+                        		controlGroup.removeClass(&#x27;error&#x27;);
+                        		input.val(&#x27;&#x27;);
+                        	});
+                        	self.on(&#x27;shown&#x27;, function () {
+                        		input.focus();
+                        	});
+                        	self.on(&#x27;hidden&#x27;, function () {
+                        		if (deferredCommitCall) {
+                        			deferredCommitCall.reject(&#x27;user-cancel&#x27;);
+                        			deferredCommitCall = undefined;
+                        		}
+                        	});
+                        	self.find(&#x27;form&#x27;).submit(function () {
+                        		commit.click();
+                        		return false;
+                        	});
+                        	commit.click(function () {
+                        		if (!input.val()) {
+                        			controlGroup.addClass(&#x27;error&#x27;);
+                        			return false;
+                        		}
+                        		if (deferredCommitCall) {
+                        			deferredCommitCall.resolve(input.val());
+                        			deferredCommitCall = undefined;
+                        		}
+                        	});
+                        	self.promptForCommit = function () {
+                        		deferredCommitCall = jQuery.Deferred();
+                        		self.modal(&#x27;show&#x27;);
+                        		return deferredCommitCall.promise();
+                        	};
+                        	return self;
+                        };
+                        MM.Extensions.GitHub = function () {
+                        	&#x27;use strict&#x27;;
+                        	var api = new MM.GitHub.GithubAPI(MM.GitHub.popupWindowLoginLauncher),
+                        		mapController = MM.Extensions.components.mapController,
+                        		prompters = { },
+                        		fileSystem = new MM.GitHub.GithubFileSystem(api, prompters),
+                        		loadUI = function (html) {
+                        			var dom = $(html),
+                        				modalOpen = dom.find(&#x27;#modalGithubOpen&#x27;).detach().appendTo(&#x27;body&#x27;).githubOpenWidget(api, mapController.loadMap.bind(mapController)),
+                        				modalCommit = dom.find(&#x27;#modalGithubCommit&#x27;).detach().appendTo(&#x27;body&#x27;).githubCommitWidget();
+                        			prompters.commit = modalCommit.promptForCommit;
+                        			prompters.fileName = modalOpen.promptForFileName;
+                        			$(&#x27;[data-mm-role=save] ul&#x27;).append(dom.find(&#x27;[data-mm-role=save-link]&#x27;).clone());
+                        			$(&#x27;ul[data-mm-role=save]&#x27;).append(dom.find(&#x27;[data-mm-role=save-link]&#x27;).clone());
+                        			$(&#x27;[data-mm-role=open-sources]&#x27;).prepend(dom.find(&#x27;[data-mm-role=open-link]&#x27;));
+                        			$(&#x27;[data-mm-role=new-sources]&#x27;).prepend(dom.find(&#x27;[data-mm-role=new-link]&#x27;));
+                        			$(&#x27;[data-mm-role=sharelinks]&#x27;).prepend(dom.find(&#x27;[data-mm-role=sharelinks]&#x27;).children());
+                        			mapController.validMapSourcePrefixesForSaving += fileSystem.prefix;
+                        		};
+                        	mapController.addMapSource(new MM.RetriableMapSourceDecorator(new MM.FileSystemMapSource(fileSystem)));
+                        	$.get(MM.Extensions.mmConfig.publicUrl + &#x27;/e/github.html&#x27;, loadUI);
+                        	$(&#x27;&lt;link rel=&quot;stylesheet&quot; href=&quot;&#x27; + MM.Extensions.mmConfig.publicUrl + &#x27;/e/github.css&quot; /&gt;&#x27;).appendTo($(&#x27;body&#x27;));
+                        
+                        };
+                        if (!window.jasmine) {
+                        	MM.Extensions.GitHub();
+                        }
+                        
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

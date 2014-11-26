@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>public/lib/s3-api.js - MindMup</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="https://mindmup.github.com/logo_64.png" title="MindMup"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 20141124</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/ActivityLog.html">ActivityLog</a></li>
+                                <li><a href="../classes/GoldApi.html">GoldApi</a></li>
+                                <li><a href="../classes/GoldLicenseManager.html">GoldLicenseManager</a></li>
+                                <li><a href="../classes/JsonStorage.html">JsonStorage</a></li>
+                                <li><a href="../classes/LayoutExportController.html">LayoutExportController</a></li>
+                                <li><a href="../classes/S3Api.html">S3Api</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/MM.html">MM</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: public/lib/s3-api.js</h1>
+                        
+                        <div class="file">
+                            <pre class="code prettyprint linenums">
+                        /*global jQuery, MM, FormData, window, _*/
+                        /**
+                         *
+                         * Utility class that implements AWS S3 POST upload interface and
+                         * understands AWS S3 listing responses
+                         *
+                         * @class S3Api
+                         * @constructor
+                         */
+                        MM.S3Api = function () {
+                        	&#x27;use strict&#x27;;
+                        	var self = this;
+                            /**
+                             * Upload a file to S3 using the AWS S3 Post mechanism
+                             * @method save
+                             * @param {String} contentToSave file content to upload
+                             * @param {Object} saveConfiguration a hash containing
+                             * @param {String} saveConfiguration.key AWS S3 bucket key to upload
+                             * @param {String} saveConfiguration.AWSAccessKeyId AWS S3 access key ID of the requesting user
+                             * @param {String} saveConfiguration.policy AWS S3 POST upload policy, base64 encoded
+                             * @param {String} saveConfiguration.signature AWS S3 POST signed policy
+                             */
+                        	this.save = function (contentToSave, saveConfiguration, options) {
+                        		var formData = new FormData(),
+                        			savePolicy = options &amp;&amp; options.isPrivate ? &#x27;bucket-owner-read&#x27; : &#x27;public-read&#x27;,
+                        			deferred = jQuery.Deferred(),
+                        			saveFailed = function (evt) {
+                        				var errorReasonMap = { &#x27;EntityTooLarge&#x27;: &#x27;file-too-large&#x27; },
+                        					errorDoc,
+                        					errorReason,
+                        					errorLabel;
+                        				if (evt.status === 403) {
+                        					deferred.reject(&#x27;failed-authentication&#x27;);
+                        					return;
+                        				}
+                        				try {
+                        					errorDoc = evt &amp;&amp; (evt.responseXML || jQuery.parseXML(evt.responseText));
+                        					errorReason = jQuery(errorDoc).find(&#x27;Error Code&#x27;).text();
+                        				} catch (e) {
+                        					// just ignore, the network error is set by default
+                        				}
+                        				if (!errorReason) {
+                        					deferred.reject(&#x27;network-error&#x27;);
+                        					return;
+                        				}
+                        				errorLabel = jQuery(errorDoc).find(&#x27;Error Message&#x27;).text();
+                        
+                        				deferred.reject(errorReasonMap[errorReason], errorLabel);
+                        			};
+                        
+                        		[&#x27;key&#x27;, &#x27;AWSAccessKeyId&#x27;, &#x27;policy&#x27;, &#x27;signature&#x27;].forEach(function (parameter) {
+                        			formData.append(parameter, saveConfiguration[parameter]);
+                        		});
+                        		formData.append(&#x27;acl&#x27;, savePolicy);
+                        		formData.append(&#x27;Content-Type&#x27;, saveConfiguration[&#x27;Content-Type&#x27;] || &#x27;text/plain&#x27;);
+                        		formData.append(&#x27;file&#x27;, contentToSave);
+                        		jQuery.ajax({
+                        			url: &#x27;https://&#x27; + saveConfiguration.s3BucketName + &#x27;.s3.amazonaws.com/&#x27;,
+                        			type: &#x27;POST&#x27;,
+                        			processData: false,
+                        			contentType: false,
+                        			data: formData
+                        		}).then(deferred.resolve, saveFailed);
+                        		return deferred.promise();
+                        	};
+                        	self.pollerDefaults = {sleepPeriod: 1000, timeoutPeriod: 120000};
+                            /**
+                             * Poll until a file becomes available on AWS S3
+                             * @method poll
+                             * @param {String} signedListUrl a signed AWS S3 URL for listing on a key prefix
+                             * @param {Object} [opts] additional options
+                             * @param {int} [opts.sleepPeriod] sleep period in milliseconds between each poll (default=1 sec)
+                             * @param {int} [opts.timeoutPeriod] maximum total time before polling operation fails (default = 12 secs)
+                             * @param {function} [opts.stoppedSemaphore] a predicate function that is checked to see if polling should be aborted
+                             */
+                        	self.poll = function (signedListUrl, options) {
+                        		var sleepTimeoutId,
+                        			timeoutId,
+                        			deferred = jQuery.Deferred(),
+                        			shouldPoll = function () {
+                        				return deferred &amp;&amp; !(options.stoppedSemaphore &amp;&amp; options.stoppedSemaphore());
+                        			},
+                        			execRequest = function () {
+                        				var setSleepTimeout = function () {
+                        					if (shouldPoll()) {
+                        						options.sleepTimeoutId = window.setTimeout(execRequest, options.sleepPeriod);
+                        					}
+                        				};
+                        				if (shouldPoll()) {
+                        					jQuery.ajax({
+                        						url: signedListUrl,
+                        						timeout: options.sleepPeriod,
+                        						method: &#x27;GET&#x27;
+                        					}).then(function success(result) {
+                        						var key = jQuery(result).find(&#x27;Contents Key&#x27;).first().text();
+                        						if (deferred &amp;&amp; key) {
+                        							window.clearTimeout(timeoutId);
+                        							deferred.resolve(key);
+                        						} else {
+                        							setSleepTimeout();
+                        						}
+                        					}, setSleepTimeout);
+                        				} else {
+                        					window.clearTimeout(timeoutId);
+                        				}
+                        			},
+                        			cancelRequest = function () {
+                        				if (shouldPoll()) {
+                        					deferred.reject(&#x27;polling-timeout&#x27;);
+                        				}
+                        				window.clearTimeout(sleepTimeoutId);
+                        				deferred = undefined;
+                        			};
+                        		options = _.extend({}, self.pollerDefaults, options);
+                        
+                        		if (shouldPoll()) {
+                        			timeoutId = window.setTimeout(cancelRequest, options.timeoutPeriod);
+                        			execRequest();
+                        		}
+                        		return deferred.promise();
+                        	};
+                        	self.loadUrl = function  (url) {
+                        		var deferred = jQuery.Deferred();
+                        		jQuery.ajax(
+                        			url, { cache: false}).then(
+                        			deferred.resolve,
+                        			function (err) {
+                        				if (err.status === 404 || err.status === 403) {
+                        					deferred.reject(&#x27;map-not-found&#x27;);
+                        				} else {
+                        					deferred.reject(&#x27;network-error&#x27;);
+                        				}
+                        
+                        			});
+                        		return deferred.promise();
+                        	};
+                        };
+                        
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

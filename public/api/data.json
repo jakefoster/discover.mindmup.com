@@ -1,0 +1,714 @@
+{
+    "project": {
+        "name": "MindMup",
+        "displayName": "MindMup API",
+        "description": "Zero-friction mind mapping online",
+        "version": "20141124",
+        "url": "https://www.mindmup.com",
+        "logo": "https://mindmup.github.com/logo_64.png"
+    },
+    "files": {
+        "public/e/github.js": {
+            "name": "public/e/github.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "public/lib/activity-log.js": {
+            "name": "public/lib/activity-log.js",
+            "modules": {},
+            "classes": {
+                "ActivityLog": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "public/lib/gold-api.js": {
+            "name": "public/lib/gold-api.js",
+            "modules": {},
+            "classes": {
+                "GoldApi": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "public/lib/gold-license-manager.js": {
+            "name": "public/lib/gold-license-manager.js",
+            "modules": {},
+            "classes": {
+                "GoldLicenseManager": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "public/lib/json-storage.js": {
+            "name": "public/lib/json-storage.js",
+            "modules": {},
+            "classes": {
+                "JsonStorage": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "public/lib/layout-export.js": {
+            "name": "public/lib/layout-export.js",
+            "modules": {},
+            "classes": {
+                "LayoutExportController": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "public/lib/s3-api.js": {
+            "name": "public/lib/s3-api.js",
+            "modules": {},
+            "classes": {
+                "S3Api": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "public/mapjs-compiled.js": {
+            "name": "public/mapjs-compiled.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "public/mm.js": {
+            "name": "public/mm.js",
+            "modules": {
+                "MM": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "MM": {
+            "name": "MM",
+            "submodules": {},
+            "classes": {
+                "ActivityLog": 1,
+                "GoldApi": 1,
+                "GoldLicenseManager": 1,
+                "JsonStorage": 1,
+                "LayoutExportController": 1,
+                "S3Api": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "main",
+            "file": "public/lib/s3-api.js",
+            "line": 2,
+            "description": "MindMup API",
+            "itemtype": "main"
+        }
+    },
+    "classes": {
+        "ActivityLog": {
+            "name": "ActivityLog",
+            "shortname": "ActivityLog",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "MM",
+            "file": "public/lib/activity-log.js",
+            "line": 2,
+            "description": "Utility logging class that can dispatch events. Used by other classes\nas a central tracking and analytics mechanism. Caches a list of most\nrecent events in memory for troubleshooting purposes.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "maxNumberOfElements",
+                    "description": "the maximum number of elements to keep in memory",
+                    "type": "Int"
+                }
+            ]
+        },
+        "GoldApi": {
+            "name": "GoldApi",
+            "shortname": "GoldApi",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "MM",
+            "file": "public/lib/gold-api.js",
+            "line": 2,
+            "description": "MM Gold API wrapper. This class is a JavaScript interface to the remote HTTP Gold server API,\nand provides low-level methods for authentication and generating security tokens.\nIt implements the _configurationGenerator_ interface required by the {{#crossLink \"LayoutExportController\"}}{{/crossLink}}\nso it can be used directly to construct an export workflow class.\n\n## Access licenses\n\nMindMup Gold requires a valid license for most file operations. The license is effectively a secret key\nidentifying the user, and granting access to the server resources for storage and export. The license\nis used for billing purposes to associate the resource usage with an active Gold subscription.\n\nThere are two ways to allow users to access the service:\n\n1. Allow your users to log in with their individual Gold accounts, effectively using their subscriptions\n2. Use a single license for all the users\n\nFor the first scenario, each user session should go through the Authentication Workflow described below. For\nthe second scenario, it is better to execute the authentication once manually, and store the license\nkey securely on a server. The license key never expires and should be kept secret.\n\nTo make this class more useful, the actual storage and management of the license is abstracted into a separate\ninterface, so third party implementers can provide their own storage mechanism. See\nthe {{#crossLink \"GoldLicenseManager\"}}{{/crossLink}} for more information.\n\n## Authentication workflow\n\nMindMup Gold does not use passwords - instead, the authentication workflow\nis similar to the typical password reset scenario - a one-time\nauthentication token can be requested from the server, and the token is sent\nto the e-mail associated with the account. This token can then be used to\nretrieve the Gold license key (in effect, logging in). See\n{{#crossLink \"GoldApi/requestCode:method\"}}{{/crossLink}} and\n{{#crossLink \"GoldApi/restoreLicenseWithCode:method\"}}{{/crossLink}}\nfor more information.\n\nFor extra security, the internal HTTP API requires the sender to provide a\ntoken known only to the requester while asking for a code, and supply the\nsame token again when retrieving the license. This effectively protects\nagainst the e-mail being intercepted. A third party reading e-mails with\naccess codes will not be able to use them, because they don't know the\nclient token. The JavaScript API hides this complexity and automatically\ngenerates a random string to send. This limits the execution of the two\ncalls to a single instance of GoldApi, as the current string is stored in\nmemory.\n\nThe one-time codes sent by mail have to be used within a 10 minute time span\nto retrieve a license, and only one such code can be active at any given\ntime. Requesting a new code effectively cancels the previous one.  (The\nlicense string itself never expires automatically, and can be cached\nlocally).",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "goldLicenseManager",
+                    "description": "an object implementing the GoldLicenseManager API",
+                    "type": "GoldLicenseManager"
+                },
+                {
+                    "name": "goldApiUrl",
+                    "description": "the end-point for the HTTP API",
+                    "type": "String"
+                },
+                {
+                    "name": "activityLog",
+                    "description": "activity log instance for logging purposes",
+                    "type": "ActivityLog"
+                },
+                {
+                    "name": "goldBucketName",
+                    "description": "the S3 bucket name for public and anonymous files",
+                    "type": "String"
+                }
+            ]
+        },
+        "GoldLicenseManager": {
+            "name": "GoldLicenseManager",
+            "shortname": "GoldLicenseManager",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "MM",
+            "file": "public/lib/gold-license-manager.js",
+            "line": 2,
+            "description": "Utility method to manage the active Gold license in memory. Uses a browser storage to cache the license\nand expects a visual widget to listen to observable events to handle possible authentication requests.\n\nThe class is split out\nfrom the {{#crossLink \"GoldApi\"}}{{/crossLink}} class so third-party users can provide an alternative\nimplementation that reads a license from disk or something similar.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "storage",
+                    "description": "an object store for license persistence",
+                    "type": "JsonStorage"
+                },
+                {
+                    "name": "storageKey",
+                    "description": "the hash-key used to store the license in the storage",
+                    "type": "String"
+                }
+            ]
+        },
+        "JsonStorage": {
+            "name": "JsonStorage",
+            "shortname": "JsonStorage",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "MM",
+            "file": "public/lib/json-storage.js",
+            "line": 2,
+            "description": "A simple wrapper that allows objects to be stored as JSON strings in a HTML5 storage. It\nautomatically applies JSON.stringify and JSON.parse when storing and retrieving objects",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "storage",
+                    "description": "object implementing the following API (for example a HTML5 localStorage)",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "setItem",
+                            "description": "function(String key, String value)",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "getItem",
+                            "description": "function(String key)",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "removeItem",
+                            "description": "function(String key)",
+                            "type": "Function"
+                        }
+                    ]
+                }
+            ]
+        },
+        "LayoutExportController": {
+            "name": "LayoutExportController",
+            "shortname": "LayoutExportController",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "MM",
+            "file": "public/lib/layout-export.js",
+            "line": 2,
+            "description": "Utility class that implements the workflow for requesting an export and polling for results.\n\n## Export workflow\n\nMindMup.com supports several server processes that convert map (or layout) files into other formats (images, slides etc).\nThese server side resources require a valid Gold license for storage and billing, so the access is controlled\nusing the {{#crossLink \"GoldApi\"}}{{/crossLink}}. The general workflow to order an export is:\n\n1. Ask the Gold API for an upload token for a particular upload format.\n   The Gold API will reply with all information required to upload a file to\n   Amazon S3, as well as signed URLs to check for the conversion result or error\n2. Upload the source content to Amazon S3. Note that some formats require a layout, some require an entire map.\n3. Poll the result and error URLs periodically. If the file appears on the result URL, download it and send to users. If\n   a file appears on the error URL or nothing appears until the polling timeout, fail and stop polling\n\nThis class coordinates all the complexity of the workflow and conversions in a simple convenience method.\n\n## Export formats\n\nCurrently supported formats are:\n   * pdf - the map file as a scalable vector PDF\n   * png - the map as a bitmap image (PNG)\n   * presentation.pdf - the slideshow as a scalable vector PDF\n   * presentation.pptx - the slideshow as a PowerPoint file\n\nIn general, the exporters do not work on raw map files, but on layouts already positioned by the client browser. The pdf and png\nexport formats require a map layout to be uploaded to the server. The storyboard exporters require a JSON version of the storyboard.\nThere are several utility functions that generate the appropriate content for each format. For an example of how to generate the\nright data to send it up, see https://github.com/mindmup/mindmup/blob/master/public/main.js\n\n### Additional properties\n\nThe PDF format requires the following additional properties to be specified when starting the export\n\n    {export: {'orientation': String, 'page-size': String, 'margin': int }}\n\n* orientation can be either 'portrait' or 'landscape'\n* page-size can be A0, A1, A2, A3, A4, A5",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "exportFunctions",
+                    "description": "a hash-map _format -> function_ that produces a JSON object which will be uploaded to the server",
+                    "type": "Object"
+                },
+                {
+                    "name": "configurationGenerator",
+                    "description": "object implementing the following API (for example a {{#crossLink \"GoldApi\"}}{{/crossLink}} instance)",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "generateExportConfiguration",
+                            "description": "(String format)",
+                            "type": "Function"
+                        }
+                    ]
+                },
+                {
+                    "name": "storageApi",
+                    "description": "object implementing the following API (for example a {{#crossLink \"S3Api\"}}{{/crossLink}} instance):",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "save",
+                            "description": "(String content, Object configuration, Object properties)",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "poll",
+                            "description": "(URL urlToPoll, Object options)",
+                            "type": "Function"
+                        }
+                    ]
+                },
+                {
+                    "name": "activityLog",
+                    "description": "logging interface",
+                    "type": "ActivityLog"
+                }
+            ]
+        },
+        "S3Api": {
+            "name": "S3Api",
+            "shortname": "S3Api",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "MM",
+            "file": "public/lib/s3-api.js",
+            "line": 2,
+            "description": "Utility class that implements AWS S3 POST upload interface and\n understands AWS S3 listing responses",
+            "is_constructor": 1
+        }
+    },
+    "classitems": [
+        {
+            "file": "public/e/github.js",
+            "line": 5,
+            "class": "ActivityLog"
+        },
+        {
+            "file": "public/e/github.js",
+            "line": 15,
+            "description": "Encodes a string in base64",
+            "params": [
+                {
+                    "name": "input",
+                    "description": "The string to encode in base64.",
+                    "type": "String"
+                }
+            ],
+            "class": "ActivityLog"
+        },
+        {
+            "file": "public/e/github.js",
+            "line": 48,
+            "description": "Decodes a base64 string.",
+            "params": [
+                {
+                    "name": "input",
+                    "description": "The string to decode.",
+                    "type": "String"
+                }
+            ],
+            "class": "ActivityLog"
+        },
+        {
+            "file": "public/e/github.js",
+            "line": 95,
+            "class": "ActivityLog"
+        },
+        {
+            "file": "public/lib/activity-log.js",
+            "line": 15,
+            "description": "Tracks an event and dispatches a **log** event to all observers.",
+            "itemtype": "method",
+            "name": "log",
+            "params": [
+                {
+                    "name": "args",
+                    "description": "a list of arguments to log. By convention, the first argument is a category, the second is an action, the others are arbitrary strings",
+                    "type": "String",
+                    "multiple": true
+                }
+            ],
+            "class": "ActivityLog"
+        },
+        {
+            "file": "public/lib/activity-log.js",
+            "line": 41,
+            "description": "Shorthand error logging method, it will call log with an Error category and dispatch a separate **error** event",
+            "itemtype": "method",
+            "name": "error",
+            "class": "ActivityLog"
+        },
+        {
+            "file": "public/lib/activity-log.js",
+            "line": 49,
+            "description": "Utility method to look at the list of most recent events",
+            "itemtype": "method",
+            "name": "getLog",
+            "return": {
+                "description": "the list of most recent events"
+            },
+            "class": "ActivityLog"
+        },
+        {
+            "file": "public/lib/activity-log.js",
+            "line": 56,
+            "description": "Starts an asynchronous timer - can be stopped at a later point.",
+            "itemtype": "method",
+            "name": "timer",
+            "params": [
+                {
+                    "name": "category",
+                    "description": "the category to log",
+                    "type": "String"
+                },
+                {
+                    "name": "action",
+                    "description": "the action to log",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "javascript object with an **end** method, which will stop the timer and log the total number of milliseconds taken since start"
+            },
+            "class": "ActivityLog"
+        },
+        {
+            "file": "public/lib/gold-api.js",
+            "line": 138,
+            "description": "Creates an export configuration for server-side exports. See\n{{#crossLink \"LayoutExportController/startExport:method\"}}{{/crossLink}}\nfor an example of how to use it.",
+            "itemtype": "method",
+            "name": "generateExportConfiguration",
+            "params": [
+                {
+                    "name": "format",
+                    "description": "one of supported formats",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "asynchronous promise that will be resolved with the export configuration",
+                "type": "jQuery.Deferred"
+            },
+            "class": "GoldApi"
+        },
+        {
+            "file": "public/lib/gold-api.js",
+            "line": 155,
+            "description": "Request a one-time password from the Gold server. This method starts the remote authentication\nworkflow, and will result in a one-time password being sent to the e-mail address associated with the account.",
+            "itemtype": "method",
+            "name": "requestCode",
+            "params": [
+                {
+                    "name": "identifier",
+                    "description": "email or account name",
+                    "type": "String"
+                },
+                {
+                    "name": "clientToken",
+                    "description": "",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "an asynchronous promise that will resolve if the e-mail was sent from the server and reject in case of an error",
+                "type": "jQuery.Deferred"
+            },
+            "class": "GoldApi"
+        },
+        {
+            "file": "public/lib/gold-api.js",
+            "line": 169,
+            "description": "Load the license manager with the license, using a one time password sent by the Gold server. This\nmethod completes the remote authentication worksflow.",
+            "itemtype": "method",
+            "name": "restoreLicenseWithCode",
+            "params": [
+                {
+                    "name": "code",
+                    "description": "the one-time password received after requesting the code",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "an asynchronous promise that will resolve or reject depending on the outcome. if successful, the GoldLicenseManager will have its license set.",
+                "type": "jQuery.Deferred"
+            },
+            "class": "GoldApi"
+        },
+        {
+            "file": "public/lib/gold-license-manager.js",
+            "line": 23,
+            "description": "Get the current license from memory, without trying to asynchronously retrieve it from network",
+            "itemtype": "method",
+            "name": "getLicense",
+            "return": {
+                "description": "the current license from storage",
+                "type": "Object"
+            },
+            "class": "GoldLicenseManager"
+        },
+        {
+            "file": "public/lib/gold-license-manager.js",
+            "line": 32,
+            "description": "Asynchronous method which will try to get a local license, and if not available notify any observers to\nshow the UI for logging in or retrieving the license over network in some other way",
+            "itemtype": "method",
+            "name": "retrieveLicense",
+            "params": [
+                {
+                    "name": "forceAuthentication",
+                    "description": "if true, force authentication even if logged in (eg to force a login or replacing an expired license)",
+                    "type": "Boolean"
+                }
+            ],
+            "return": {
+                "description": "a promise that will be resolved when a license is finally set or rejected",
+                "type": "jQuery.Deferred"
+            },
+            "class": "GoldLicenseManager"
+        },
+        {
+            "file": "public/lib/gold-license-manager.js",
+            "line": 48,
+            "description": "Set the in-memory cached license",
+            "itemtype": "method",
+            "name": "storeLicense",
+            "params": [
+                {
+                    "name": "licenseArg",
+                    "description": "gold license",
+                    "type": "String or JSON"
+                }
+            ],
+            "return": {
+                "description": "true if the license is in correct format and storage accepted it, false otherwise"
+            },
+            "class": "GoldLicenseManager"
+        },
+        {
+            "file": "public/lib/gold-license-manager.js",
+            "line": 73,
+            "description": "Stop the current asynchronous license entry process, notifying all observers about failure.\n\n_This is an optional method, and you only need to re-implement it if you want to re-use the MindMup Gold License entry widget._",
+            "itemtype": "method",
+            "name": "cancelLicenseEntry",
+            "class": "GoldLicenseManager"
+        },
+        {
+            "file": "public/lib/gold-license-manager.js",
+            "line": 88,
+            "description": "Complete the current asynchronous license entry, notifying all observers about successful completion. this implementation\nexpects that storeLicense was already called.\n\n_This is an optional method, and you only need to re-implement it if you want to re-use the MindMup Gold License entry widget._",
+            "itemtype": "method",
+            "name": "completeLicenseEntry",
+            "class": "GoldLicenseManager"
+        },
+        {
+            "file": "public/lib/json-storage.js",
+            "line": 16,
+            "description": "Store an object under a key",
+            "itemtype": "method",
+            "name": "setItem",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "the storage key",
+                    "type": "String"
+                },
+                {
+                    "name": "value",
+                    "description": "an object to be stored, has to be JSON serializable",
+                    "type": "Object"
+                }
+            ],
+            "class": "JsonStorage"
+        },
+        {
+            "file": "public/lib/json-storage.js",
+            "line": 25,
+            "description": "Get an item from storage",
+            "itemtype": "method",
+            "name": "getItem",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "the storage key used to save the object",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "a JSON-parsed object from storage",
+                "type": "Object"
+            },
+            "class": "JsonStorage"
+        },
+        {
+            "file": "public/lib/json-storage.js",
+            "line": 38,
+            "description": "Remove an object from storage",
+            "itemtype": "method",
+            "name": "remove",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "the storage key used to save the object",
+                    "type": "String"
+                }
+            ],
+            "class": "JsonStorage"
+        },
+        {
+            "file": "public/lib/layout-export.js",
+            "line": 62,
+            "description": "Kick-off an export workflow\n\nThis method will generate the content to export by calling the appropriate export function, merge optional\ngeneric data with the result, upload the document to the server and poll until it receives an error or a result",
+            "itemtype": "method",
+            "name": "startExport",
+            "params": [
+                {
+                    "name": "format",
+                    "description": "one of the supported formats, provided in the constructor",
+                    "type": "String"
+                },
+                {
+                    "name": "exportProperties",
+                    "description": "any generic properties that will be merged into the object generated by an export function before uploading",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "a jQuery promise that will be resolved with the URL of the exported document if successful",
+                "type": "jQuery.Deferred"
+            },
+            "class": "LayoutExportController"
+        },
+        {
+            "file": "public/lib/s3-api.js",
+            "line": 13,
+            "description": "Upload a file to S3 using the AWS S3 Post mechanism",
+            "itemtype": "method",
+            "name": "save",
+            "params": [
+                {
+                    "name": "contentToSave",
+                    "description": "file content to upload",
+                    "type": "String"
+                },
+                {
+                    "name": "saveConfiguration",
+                    "description": "a hash containing",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "key",
+                            "description": "AWS S3 bucket key to upload",
+                            "type": "String"
+                        },
+                        {
+                            "name": "AWSAccessKeyId",
+                            "description": "AWS S3 access key ID of the requesting user",
+                            "type": "String"
+                        },
+                        {
+                            "name": "policy",
+                            "description": "AWS S3 POST upload policy, base64 encoded",
+                            "type": "String"
+                        },
+                        {
+                            "name": "signature",
+                            "description": "AWS S3 POST signed policy",
+                            "type": "String"
+                        }
+                    ]
+                }
+            ],
+            "class": "S3Api"
+        },
+        {
+            "file": "public/lib/s3-api.js",
+            "line": 67,
+            "description": "Poll until a file becomes available on AWS S3",
+            "itemtype": "method",
+            "name": "poll",
+            "params": [
+                {
+                    "name": "signedListUrl",
+                    "description": "a signed AWS S3 URL for listing on a key prefix",
+                    "type": "String"
+                },
+                {
+                    "name": "opts",
+                    "description": "additional options",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "sleepPeriod",
+                            "description": "sleep period in milliseconds between each poll (default=1 sec)",
+                            "type": "Int",
+                            "optional": true
+                        },
+                        {
+                            "name": "timeoutPeriod",
+                            "description": "maximum total time before polling operation fails (default = 12 secs)",
+                            "type": "Int",
+                            "optional": true
+                        },
+                        {
+                            "name": "stoppedSemaphore",
+                            "description": "a predicate function that is checked to see if polling should be aborted",
+                            "type": "Function",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "class": "S3Api"
+        },
+        {
+            "file": "public/mapjs-compiled.js",
+            "line": 403,
+            "class": ""
+        }
+    ],
+    "warnings": [
+        {
+            "message": "Missing item type",
+            "line": " public/e/github.js:5"
+        },
+        {
+            "message": "Missing item type\nEncodes a string in base64",
+            "line": " public/e/github.js:15"
+        },
+        {
+            "message": "Missing item type\nDecodes a base64 string.",
+            "line": " public/e/github.js:48"
+        },
+        {
+            "message": "Missing item type",
+            "line": " public/e/github.js:95"
+        },
+        {
+            "message": "Missing item type",
+            "line": " public/mapjs-compiled.js:403"
+        }
+    ]
+}
