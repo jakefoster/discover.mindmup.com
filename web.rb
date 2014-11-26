@@ -47,7 +47,7 @@ get '/mindmup-for-tablets' do
 end
 get '/guide_mobile/:my_app_version/:my_doc_version' do
   halt 404 unless params[:my_app_version].to_f >= 3
-  latest = 2
+  latest = 1
   if (params[:my_doc_version].to_f < latest) then
     @title="MindMup IOS Guide version #{params[:version]}"
     erb :guide_mobile, :layout=> false
