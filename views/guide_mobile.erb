@@ -3,11 +3,26 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/lib/jquery-2.1.0.min.js"></script>
-    <link href="/v/7/mobile_guide.css" rel="stylesheet">
+
+
     <title><%=@title%></title>
     <!--Version for iOS to store-->
     <!--version[<%=@version%>]-->
+    <!--embedded-styles-START-->
+    <link href="/v/7/mobile_guide.css" rel="stylesheet">
+    <!--embedded-styles-END-->
+    <style>
+    /*embedded-styles-INSERT*/
+    </style>
+
+    <!--embedded-scripts-START-->
+    <script src="/lib/jquery-2.1.0.min.js"></script>
+    <!--embedded-scripts-END-->
+
+    <script id="ios">
+    /*embedded-scripts-INSERT*/
+    </script>
+
   </head>
   <body class="show-quick-edit-guide">
     <div class="app-guide">
