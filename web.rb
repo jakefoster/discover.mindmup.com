@@ -52,7 +52,7 @@ get '/guide_ios/:my_app_version/:my_doc_version' do
   if (params[:my_doc_version].to_f < latest) then
     @title="MindMup IOS Guide version #{latest}"
     @version=latest
-    erb :guide_mobile, :layout=> false
+    erb :guide_ios, :layout=> false
   else
     halt 304, "OK"
   end
