@@ -1,7 +1,7 @@
 body {
 	font-family: Helvetica, "Arial Unicode MS", sans-serif;
 	font-weight: normal;
-	font-size: 12px;
+	font-size: 12pt;
 	color: #4F4F4F;
 	margin: 0;
 	padding: 20px 0 0 0;
@@ -44,8 +44,6 @@ a {
 	line-height: 140%;
 }
 
-.section-introduction a {
-}
 
 .toolbar-icon {
 	height: 40px;
@@ -62,6 +60,8 @@ a {
 .toolbar-description  p {
 	padding: 0;
 	margin: 0;
+	font-size: 10pt;
+	line-height: 130%;
 }
 .toolbar-description tr > td:last-of-type {
 
@@ -72,7 +72,7 @@ a {
 }
 
 .toolbar-description i {
-	font-size: 10px;
+	font-size: 9pt;
 }
 h3 {
 	margin: 0;
