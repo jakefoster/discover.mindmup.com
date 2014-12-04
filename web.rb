@@ -45,7 +45,7 @@ get '/mindmup-for-tablets' do
   @title='MindMup for Tablets and Phones'
   erb :mobile
 end
-get '/guide_mobile/:my_app_version/:my_doc_version' do
+get '/guide_ios/:my_app_version/:my_doc_version' do
   halt 404 unless params[:my_app_version].to_f >= 3
 
   latest = 3
