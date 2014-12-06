@@ -74,15 +74,21 @@ a {
 .toolbar-description i {
 	font-size: 9pt;
 }
-h3 {
+h3, h4, h5 {
 	margin: 0;
 	padding: 5px 0 5px 10px;
 }
+
 .section-title {
 	color: white;
 	background-color: #0FA9E2;
 	margin: 0;
 	font-variant: small-caps;
+}
+.sub-section-title {
+	border-top:1px dashed #0FA9E2;
+	color: #0FA9E2;
+	margin: 10px 0 0 0;
 }
 .illustration {
 	display: block;
