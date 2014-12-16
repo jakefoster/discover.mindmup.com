@@ -25,18 +25,101 @@
     </script>
 
   </head>
-  <body class="show-quick-edit-guide">
+  <body class="show-app-guide">
     <div class="app-guide">
-      <h2>App</h2>
+      <h2>MindMup App Guide</h2>
       <div class="row" >
-        <h2>How do I add some nodes quickly?</h2>
-        <p>MindMup Gold allows you to:</p>
+        <div class="section-title"><a name="main-menu"></a><h3>Main Menu</h3></div>
+        <img class="illustration" src="/img/guide_ios/ios_main_menu_not_logged_in.png">
+        <div class="section-introduction">The main menu is the first thing you see when you start the app. It allows you to perform the tasks needed to get you up and running.</div>
+        <table class="toolbar-description">
+          <tbody>
+            <tr>
+              <td><img class="toolbar-icon" src="/img/guide_ios/toolbar_icon_add.svg"></td>
+              <td class="toolbar-description">
+                <p>Tapping this icon will create a new map and switch to the editor view so you can add your ideas</p>
+              </td>
+            </tr>
+            <tr>
+              <td><img class="toolbar-icon" src="/img/guide_ios/mm_drive_import.svg"></td>
+              <td class="toolbar-description">
+                <p><a name="document-picker-import-icon"></a>Tapping this icon will open a document picker that will allow you to import maps from other applications that provide document picker capabilities, such as Dropbox and Google Drive apps. See the <a href="#importing-maps">Importing maps</a> section for  more information</p>
+              </td>
+            </tr>
+            <tr>
+              <td><img class="toolbar-icon" src="/img/guide_ios/mm_spider_gold.svg"></td>
+              <td class="toolbar-description">
+                <p>Tapping this icon will open the MindMup gold account management view</p>
+              </td>
+            </tr>
+            <tr>
+              <td><img class="toolbar-icon" src="/img/guide_ios/ios_import_icon_gold.svg"></td>
+              <td class="toolbar-description">
+                <p>If you have logged into your MindMup gold account this icon will be visible, allowing you to import maps from MindMup gold storage</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="row">
-        <h2>How do I change the colour?</h2>
-        <p>Simply....</p>
+      <div class="row" >
+        <div class="section-title"><a name="importing-maps"></a><h3>Actions on Maps</h3></div>
+        <div class="section-introduction">Maps you have previously imported or created are listed in the main menu, with the most recently modified first in the list. To open the map for editing, double tap the map image in the menu. To perform other actions on the map, tap it once to show the map toolbar</div>
+        <img class="illustration" src="/img/guide_ios/ios_map_toolbar.png">
+        <table class="toolbar-description">
+          <tbody>
+            <tr>
+              <td><img class="toolbar-icon" src="/img/guide_ios/toolbar_icon_edit.svg"></td>
+              <td class="toolbar-description">
+                <p>Tap this icon to open the map editor</a></p>
+              </td>
+            </tr>
+            <tr>
+              <td><img class="toolbar-icon" src="/img/guide_ios/ios_icon_export.svg"></td>
+              <td class="toolbar-description">
+                <p>Tap this icon to open map sharing view</a></p>
+              </td>
+            </tr>
+            <tr>
+              <td><img class="toolbar-icon" src="/img/guide_ios/ios_icon_clipboard.svg"></td>
+              <td class="toolbar-description">
+                <p>Tap this icon to create a copy of the map, and open in the map editor</a></p>
+              </td>
+            </tr>
+            <tr>
+              <td><img class="toolbar-icon" src="/img/guide_ios/ios_icon_remove.svg"></td>
+              <td class="toolbar-description">
+                <p>Tap this icon to delete the map</a></p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="row" >
+        <div class="section-title"><a name="importing-maps"></a><h3>Importing Maps</h3></div>
+        <div class="section-introduction"><a name="document-picker-import"></a>You can import maps using the <a href="#document-picker-import-icon">document picker</a>, which is accessed from the <a href="#main-menu">main menu</a>.
+          <p>To use the document picker you must have iCloud Drive set up. You will be prompted to set it up if you have not already done so.</p>
+          <p>If you do not have iCloud drive set up, and do not wish to set it up, the you can still import from apps that provide activity sheet capabilities. See <a href="#activity-sheet-import">below</a> for more information on how to do this.<p>
+          <p>When the document picker first opens, it will default to showing iCloud Drive documents. To choose a different location, tap the locations button in the top corner.</p>
+        </div>
+        <img class="illustration" src="/img/guide_ios/import_document_picker_1.png">
+        <div class="section-introduction">This will disaplay a list of enabled document sources, as illustrated below</div>
+        <img class="illustration" src="/img/guide_ios/import_document_picker_2.png">
+        <div class="section-introduction">If you see the app you want to import the document from in the list, tap the icon and you will be shown the document picker interface for the app. This is different for each app. If you do not see the app you want to import from in the list, try tapping on the 'More' item, which will allow you to enable or disable applications in the document picker.
+        </div>
+        <img class="illustration" src="/img/guide_ios/import_document_picker_3.png">
+
+        <div class="sub-section-title"><a name="edit-node-toolbar-selected-node"></a><h5>Importing using an activity sheet</h5></div>
+        <div class="section-introduction"><a name="activity-sheet-import"></a>The workflow to import a map from another app using the app's activity sheet varies for each app. The most common workflow involves selecting the file you wish to export in the app that you wish to export from, then tapping a share button (which often has an icon similar to <img class="toolbar-icon-tiny" src="/img/guide_ios/ios_icon_export.svg">). This should bring up an action sheet, similar to the illustration below.
+        </div>
+        <img class="illustration" src="/img/guide_ios/share_Sheet_example_1.png">
+        <div class="section-introduction">Tapping on the 'Open in...' icon will show applications that can accept the map, as illustrated below</div>
+        </div>
+        <img class="illustration" src="/img/guide_ios/share_Sheet_example_2.png">
+        <div class="section-introduction">Tapping on the 'Open in Mindmup' icon will import the map into the MindMup app if it is a valid map.</div>
+        </div>
       </div>
     </div>
+
     <div class="quick-edit-guide">
       <h2>MindMup Editor Help</h2>
       <div class="row" >
