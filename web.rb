@@ -41,8 +41,8 @@ get '/press' do
   @title='Press resources'
   erb :press
 end
-get '/mindmup-for-tablets' do
-  @title='MindMup for Tablets and Phones'
+get '/mindmup-for-ios' do
+  @title='MindMup for iPad and iPhone'
   erb :mobile
 end
 get '/guide_ios/:my_app_version/:my_doc_version' do

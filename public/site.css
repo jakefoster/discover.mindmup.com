@@ -83,3 +83,12 @@ background: transparent;
 .lists {
  text-align:center;
 }
+.lead {
+  text-align: justify;
+}
+.featurette p {
+  text-align: justify;
+}
+.featurette img {
+  margin-bottom: 1em;
+}
