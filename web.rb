@@ -1,6 +1,6 @@
 require 'sinatra'
 configure do
-  set :static_host, 'http://static.mindmup.com'
+  set :static_host, 'https://d1g6a398qq2djm.cloudfront.net'
 end
 get '/v/:version/:file' do
   send_file File.join(settings.public_folder, params[:file])
