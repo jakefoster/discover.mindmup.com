@@ -39,7 +39,13 @@ get '/mouse-touch-operations' do
 end
 get '/press' do
   @title='Press resources'
+  @description='Screenshots and facts about MindMup for bloggers and press'
   erb :press
+end
+get '/atlas' do
+  @title='MindMup Atlas'
+  @description='Publish and share mind maps online'
+  erb :atlas
 end
 get '/mindmup-for-ios' do
   @title='MindMup for iPad and iPhone'
