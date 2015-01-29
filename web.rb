@@ -54,7 +54,7 @@ end
 get '/guide_ios/:my_app_version/:my_doc_version' do
   halt 404 unless params[:my_app_version].to_f >= 3
 
-  latest = 3
+  latest = 4
   if (params[:my_doc_version].to_f < latest) then
     @title="MindMup IOS Guide version #{latest}"
     @version=latest
