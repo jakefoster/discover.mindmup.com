@@ -1,6 +1,6 @@
 require 'sinatra'
 configure do
-  set :cdn_host, ENV['CDN_HOST'] 
+  set :cdn_host, ENV['CDN_HOST']
 end
 get '/v/:version/:file' do
   send_file File.join(settings.public_folder, params[:file])
@@ -58,7 +58,11 @@ get '/guide_ios/:my_app_version/:my_doc_version' do
   if (params[:my_doc_version].to_f < latest) then
     @title="MindMup IOS Guide version #{latest}"
     @version=latest
-    erb :guide_ios, :layout=> false
+    if params[:my_app_version].to_f >= 3.1 then
+      erb :guide_ios, :layout=> false
+    else
+      erb :guide_ios_up_to_v3, :layout=> false
+    end
   else
     halt 304, "OK"
   end
