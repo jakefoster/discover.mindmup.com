@@ -42,6 +42,11 @@ get '/press' do
   @description='Screenshots and facts about MindMup for bloggers and press'
   erb :press
 end
+get '/hangouts' do
+  @title='MindMup for Google Hangouts'
+  @description='High-bandwidth collaborative brainstorming and idea review'
+  erb :hangouts
+end
 get '/atlas' do
   @title='MindMup Atlas'
   @description='Publish and share mind maps online'
