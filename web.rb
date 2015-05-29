@@ -47,6 +47,11 @@ get '/hangouts' do
   @description='High-bandwidth collaborative brainstorming and idea review'
   erb :hangouts
 end
+get '/classroom' do
+  @title='Mind Mapping in schools and classrooms'
+  @description='Mind mapping in schools and classrooms, educational techology'
+  erb :classroom
+end
 get '/atlas' do
   @title='MindMup Atlas'
   @description='Publish and share mind maps online'
