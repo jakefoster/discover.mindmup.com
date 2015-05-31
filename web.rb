@@ -47,6 +47,11 @@ get '/hangouts' do
   @description='High-bandwidth collaborative brainstorming and idea review'
   erb :hangouts
 end
+get '/hangouts_get_started' do
+  @title='Get started with MindMup for Google Hangouts'
+  @description='FAQ and user instructions for MindMup Hangouts'
+  erb :'hangouts-get-started'
+end
 get '/classroom' do
   @title='Mind Mapping in schools and classrooms'
   @description='Mind mapping in schools and classrooms, educational techology'
