@@ -1,2 +1,10 @@
-    <p style="text-align:center"><a class="btn btn-lg btn-primary">Start a Hangout Now!</a>
-    <a class="btn btn-lg btn-success">More Info</a></p>
+<script src="https://apis.google.com/js/platform.js"></script>
+<div id="placeholder-rr"></div>
+<script>
+  gapi.hangout.render('placeholder-rr', {
+    'render': 'createhangout',
+    'initial_apps': [{'app_id' : '221074361098', 'app_type' : 'ROOM_APP' }],
+    'widget_size': 175
+  });
+</script>
+

@@ -96,3 +96,6 @@ background: transparent;
   box-shadow: #777 0 0 1px, rgb(19,19,19) 2px 2px 5px;
   border-radius: 4px;
 }
+.spaced-top {
+  margin-top: 20px;
+}
