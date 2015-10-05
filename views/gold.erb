@@ -15,7 +15,6 @@
     <li><a href="#subscription-cancel">How to cancel a subscription?</a></li>
     <li><a href="#change-payment-method">How to change your payment details?</a></li>
     <li><a href="#secure">How secure is Gold Storage?</a></li>
-    <li><a href="#secure-export">How secure are maps converted to other formats using MindMup Gold?</a></li>
     <li><a href="#managing-files">How to manage maps stored on Gold storage?</a></li>
     <li><a href="#more-info">How to get more information about Gold?</a></li>
   </ul>
@@ -311,18 +310,6 @@ for authentication, there is not much we can do about account selection. For peo
     href="http://aws.amazon.com/s3/" target="_blank">see their product page</a>.
   </p>
 </div>
-<div class="row">
-  <a name="secure-export"></a><h2>How secure are maps converted to other formats using MindMup Gold?</h2>
-<p>MindMup Gold allows users to convert maps into various formats, such as PDF, PNG and Google Writer. The conversion
-process happens on Amazon EC2 cloud systems, where converted map content is temporarily saved to local storage, and deleted after conversion.</p>
-<p>Map files are uploaded for conversion using HTTPS to Amazon's S3 file storage system, 
-where they are kept private (only accessible to the MindMup application). These files are not accessible directly to MindMup users or anyone else apart from our servers.</p>
-<p>Converted files (PDF/PNG/...) are stored on Amazon's S3 file storage system, secured under the standard Amazon S3 access mechanisms. The files are stored secured by Amazon's standard S3 security mechanisms and not encrypted.</p>
-<p>After the conversion is complete, the link to download the result, including the access keys required to authorize the operation, is transfered to your browser over HTTPS.</p>
-<p>To the best of our knowledge, the files are not searchable, indexable or visible to anyone who does not have the security credentials associated with your URL, but we 
-provide no such guarantees a we rely on the third-party service (Amazon S3) to control the access. </p>
-</div>
-
 <div class="row">
   <a name="managing-files"></a><h2>How to manage maps stored on Gold storage?</h2>
   <p>
